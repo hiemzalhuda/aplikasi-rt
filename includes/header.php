@@ -6,19 +6,19 @@
 if (!isset($title)) $title = 'Dashboard';
 if (!isset($menu)) $menu = 'dashboard';
 $nav = array(
-    'dashboard'   => array('Dashboard',   ''),
-    'santri'      => array('Santri',      'modules/santri/'),
-    'asrama'      => array('Asrama',      'modules/asrama/'),
-    'kehadiran'   => array('Kehadiran',   'modules/kehadiran/'),
-    'hafalan'     => array('Hafalan',     'modules/hafalan/'),
-    'nilai'       => array('Nilai',       'modules/nilai/'),
-    'keuangan'    => array('Keuangan',    'modules/keuangan/'),
-    'pelanggaran' => array('Pelanggaran', 'modules/pelanggaran/'),
+    'dashboard'   => array('Dashboard',   '',                    'fa-solid fa-house'),
+    'santri'      => array('Santri',      'modules/santri/',     'fa-solid fa-users'),
+    'asrama'      => array('Asrama',      'modules/asrama/',     'fa-solid fa-bed'),
+    'kehadiran'   => array('Kehadiran',   'modules/kehadiran/',  'fa-solid fa-clipboard-check'),
+    'hafalan'     => array('Hafalan',     'modules/hafalan/',    'fa-solid fa-book-quran'),
+    'nilai'       => array('Nilai',       'modules/nilai/',      'fa-solid fa-award'),
+    'keuangan'    => array('Keuangan',    'modules/keuangan/',   'fa-solid fa-wallet'),
+    'pelanggaran' => array('Pelanggaran', 'modules/pelanggaran/','fa-solid fa-triangle-exclamation'),
 );
 $u = current_user();
 // Menu manajemen pengguna hanya untuk admin
 if ($u && $u['role'] === 'admin') {
-    $nav['users'] = array('Pengguna', 'modules/users/');
+    $nav['users'] = array('Pengguna', 'modules/users/', 'fa-solid fa-user-gear');
 }
 ?>
 <!DOCTYPE html>
@@ -50,7 +50,7 @@ try { if (localStorage.getItem('santriDark') === '1') document.body.classList.ad
         <nav class="nav">
             <?php foreach ($nav as $key => $item): ?>
             <a href="<?= url($item[1]) ?>" class="nav-link<?= $key === $menu ? ' active' : '' ?>">
-                <span class="nav-dot"></span><?= e($item[0]) ?>
+                <i class="nav-ico <?= e($item[2]) ?>"></i><?= e($item[0]) ?>
             </a>
             <?php endforeach; ?>
         </nav>

@@ -118,9 +118,9 @@ a { color: var(--brand-hover); }
 .nav-link:hover { background: var(--banner); color: var(--text); transform: translateX(4px); }
 .nav-link.active { background: var(--brand-soft); color: var(--brand-active); font-weight: 700; }
 .nav-link.active:hover { transform: none; }
-.nav-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; opacity: .35; flex-shrink: 0; transition: transform .3s var(--ease-spring), opacity .25s; }
-.nav-link:hover .nav-dot { transform: scale(1.35); opacity: .7; }
-.nav-link.active .nav-dot { opacity: 1; }
+.nav-ico { width: 22px; text-align: center; font-size: 15px; flex-shrink: 0; opacity: .75; transition: transform .3s var(--ease-spring), opacity .25s; }
+.nav-link:hover .nav-ico { transform: scale(1.18); opacity: 1; }
+.nav-link.active .nav-ico { opacity: 1; }
 .side-user { padding: 16px 18px; border-top: 1px solid var(--border); background: var(--bg); border-radius: 16px 16px 0 0; }
 .side-user-name { font-weight: 700; font-size: 14px; color: var(--text); }
 .side-user-role {
