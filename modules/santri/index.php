@@ -140,11 +140,14 @@ include __DIR__ . '/../../includes/header.php';
 ?>
 
 <div class="sn-pagebar">
-    <form method="get" action="" class="sn-search" role="search">
-        <span class="sn-search-icon"><i class="fas fa-search"></i></span>
-        <input type="text" name="q" class="sn-search-input" placeholder="Cari nama, NIS, atau alamat..."
-               value="<?= e($q) ?>" autocomplete="off">
-    </form>
+    <div class="sn-search" id="snPageSearch">
+        <form method="get" action="" role="search" autocomplete="off">
+            <span class="sn-search-icon"><i class="fas fa-search"></i></span>
+            <input type="text" name="q" id="snPageSearchInput" class="sn-search-input" placeholder="Cari nama, NIS, atau alamat..."
+                   value="<?= e($q) ?>" autocomplete="off">
+        </form>
+        <div class="sn-search-results" id="snPageSearchResults"></div>
+    </div>
     <?php if ($can_edit): ?>
     <button type="button" class="btn" data-snmodal-open="modalTambahSantri">
         <i class="fas fa-plus" style="margin-right:6px"></i>Tambah Santri

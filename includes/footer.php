@@ -191,47 +191,55 @@
     });
 })();
 
-/* ================= AUTOCOMPLETE PENCARIAN SANTRI (HEADER) ================= */
+/* ================= AUTOCOMPLETE PENCARIAN SANTRI ================= */
 (function () {
-    var wrap = document.getElementById('snGlobalSearch');
-    var input = document.getElementById('snGlobalSearchInput');
-    var box = document.getElementById('snGlobalSearchResults');
-    if (!wrap || !input || !box) return;
-    var timer = null;
     var profilBase = <?= json_encode(url('modules/santri/profil.php')) ?>;
     var cariUrl = <?= json_encode(url('modules/santri/cari.php')) ?>;
 
-    function closeBox() { box.classList.remove('open'); box.innerHTML = ''; }
     function esc(s) {
         return String(s).replace(/[&<>"']/g, function (c) {
             return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
         });
     }
-    function render(items) {
-        if (!items.length) {
-            box.innerHTML = '<div class="sr-empty">Santri tidak ditemukan. Tekan Enter untuk pencarian penuh.</div>';
-        } else {
-            box.innerHTML = items.map(function (it) {
-                return '<a href="' + profilBase + '?id=' + it.id + '" data-no-transition>' +
-                    '<div class="sr-nama">' + esc(it.nama) + '</div>' +
-                    '<div class="sr-nis">NIS: ' + esc(it.nis) + '</div></a>';
-            }).join('');
+
+    /** Pasang sugest live pada satu kotak pencarian (min 2 huruf). */
+    function snAutocomplete(wrapId, inputId, boxId) {
+        var wrap = document.getElementById(wrapId);
+        var input = document.getElementById(inputId);
+        var box = document.getElementById(boxId);
+        if (!wrap || !input || !box) return;
+        var timer = null;
+
+        function closeBox() { box.classList.remove('open'); box.innerHTML = ''; }
+        function render(items) {
+            if (!items.length) {
+                box.innerHTML = '<div class="sr-empty">Santri tidak ditemukan. Tekan Enter untuk pencarian penuh.</div>';
+            } else {
+                box.innerHTML = items.map(function (it) {
+                    return '<a href="' + profilBase + '?id=' + it.id + '" data-no-transition>' +
+                        '<div class="sr-nama">' + esc(it.nama) + '</div>' +
+                        '<div class="sr-nis">NIS: ' + esc(it.nis) + '</div></a>';
+                }).join('');
+            }
+            box.classList.add('open');
         }
-        box.classList.add('open');
+        input.addEventListener('input', function () {
+            var q = input.value.trim();
+            clearTimeout(timer);
+            if (q.length < 2) { closeBox(); return; }
+            timer = setTimeout(function () {
+                fetch(cariUrl + '?q=' + encodeURIComponent(q), { headers: { 'Accept': 'application/json' } })
+                    .then(function (r) { return r.ok ? r.json() : []; })
+                    .then(render)
+                    .catch(function () { closeBox(); });
+            }, 250);
+        });
+        input.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeBox(); });
+        document.addEventListener('click', function (e) { if (!wrap.contains(e.target)) closeBox(); });
     }
-    input.addEventListener('input', function () {
-        var q = input.value.trim();
-        clearTimeout(timer);
-        if (q.length < 2) { closeBox(); return; }
-        timer = setTimeout(function () {
-            fetch(cariUrl + '?q=' + encodeURIComponent(q), { headers: { 'Accept': 'application/json' } })
-                .then(function (r) { return r.ok ? r.json() : []; })
-                .then(render)
-                .catch(function () { closeBox(); });
-        }, 250);
-    });
-    input.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeBox(); });
-    document.addEventListener('click', function (e) { if (!wrap.contains(e.target)) closeBox(); });
+
+    snAutocomplete('snGlobalSearch', 'snGlobalSearchInput', 'snGlobalSearchResults'); // header
+    snAutocomplete('snPageSearch', 'snPageSearchInput', 'snPageSearchResults');       // halaman santri
 })();
 </script>
 </body>
