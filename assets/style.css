@@ -437,6 +437,9 @@ body.page-leave .app { opacity: 0; transform: translateY(12px); }
 .icon-btn:hover { background: var(--banner); transform: translateY(-2px); }
 .icon-btn:active { transform: scale(.9); }
 
+/* Tombol hamburger sidebar (HP saja, ala WMS) */
+.sn-menu-btn { display: none; }
+
 /* ---------- Popup jadwal sholat (pola WMS) ---------- */
 .prayer-modal { position: fixed; inset: 0; z-index: 100; background: transparent; opacity: 0; pointer-events: none; transition: opacity .25s var(--ease-out); }
 .prayer-modal.open { opacity: 1; pointer-events: auto; }
@@ -480,20 +483,25 @@ body.page-leave .app { opacity: 0; transform: translateY(12px); }
     .topbar { margin: 12px 16px 0; padding: 14px 18px; }
 }
 @media (max-width: 640px) {
-    .app { flex-direction: column; }
+    /* Sidebar jadi drawer geser (ala WMS), dibuka via tombol hamburger */
     .sidebar {
-        width: 100%; height: auto; position: static;
-        margin: 0; border-radius: 0; border: none;
-        border-bottom: 1px solid var(--border);
-        box-shadow: none;
+        position: fixed; left: 0; top: 0; bottom: 0;
+        width: 272px; max-width: 84vw; height: 100dvh;
+        margin: 0; border-radius: 0 22px 22px 0;
+        transform: translateX(-106%);
+        transition: transform .32s var(--ease-spring, cubic-bezier(.22,1,.36,1));
+        z-index: 400;
     }
-    .brand { padding: 14px 16px 10px; }
-    .nav { flex-direction: row; overflow-x: auto; padding: 8px 10px; }
-    .nav-link { white-space: nowrap; padding: 8px 12px; font-size: 13.5px; }
-    .nav-link:hover { transform: none; }
-    .side-user { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 0; }
-    .side-user-role { margin: 2px 0 0; }
-    .side-user .btn { margin-left: auto; }
+    body.sn-nav-open .sidebar { transform: none; }
+    body.sn-nav-open { overflow: hidden; }
+    .sn-scrim {
+        position: fixed; inset: 0; z-index: 390;
+        background: rgba(15, 25, 12, .45);
+        opacity: 0; pointer-events: none;
+        transition: opacity .25s var(--ease-out, ease);
+    }
+    body.sn-nav-open .sn-scrim { opacity: 1; pointer-events: auto; }
+    .sn-menu-btn { display: inline-flex; margin-right: 6px; }
     .grid-4, .grid-2 { grid-template-columns: 1fr; }
     .topbar { top: 10px; margin: 10px 12px 0; padding: 12px 16px; }
     .topbar h1 { font-size: 18px; }

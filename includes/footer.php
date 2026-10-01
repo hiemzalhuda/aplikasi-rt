@@ -191,6 +191,25 @@
     });
 })();
 
+/* ================= SIDEBAR DRAWER (HP, ala WMS) ================= */
+(function () {
+    var btn = document.getElementById('snMenuBtn');
+    var scrim = document.getElementById('snScrim');
+    if (!btn) return;
+    function setOpen(v) { document.body.classList.toggle('sn-nav-open', v); }
+    btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        setOpen(!document.body.classList.contains('sn-nav-open'));
+    });
+    if (scrim) scrim.addEventListener('click', function () { setOpen(false); });
+    document.querySelectorAll('.nav-link').forEach(function (a) {
+        a.addEventListener('click', function () { setOpen(false); });
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') setOpen(false);
+    });
+})();
+
 /* ================= AUTOCOMPLETE PENCARIAN SANTRI ================= */
 (function () {
     var profilBase = <?= json_encode(url('modules/santri/profil.php')) ?>;

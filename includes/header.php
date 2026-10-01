@@ -60,8 +60,10 @@ try { if (localStorage.getItem('santriDark') === '1') document.body.classList.ad
             <a href="<?= url('logout.php') ?>" class="btn btn-sm btn-ghost">Keluar</a>
         </div>
     </aside>
+    <div class="sn-scrim" id="snScrim"></div>
     <main class="main">
         <header class="topbar">
+            <button class="icon-btn sn-menu-btn" id="snMenuBtn" title="Menu" aria-label="Menu"><i class="fas fa-bars"></i></button>
             <h1><?= e($title) ?></h1>
             <div class="sn-search" id="snGlobalSearch">
                 <form method="get" action="<?= url('modules/santri/') ?>" role="search" autocomplete="off">
