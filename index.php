@@ -198,9 +198,18 @@ include __DIR__ . '/includes/header.php';
         font-weight: 700; font-size: 14px;
         transition: transform .35s var(--ease-spring), box-shadow .3s var(--ease-out), background .2s;
     }
-    .fh-quick a:hover { transform: translateY(-3px); box-shadow: var(--shadow-pop); background: #fff; }
+    .fh-quick a:hover { transform: translateY(-3px); box-shadow: var(--shadow-pop); background: var(--card); }
     .fh-quick a span { font-size: 12px; font-weight: 600; color: var(--text-soft); }
     .fh-quick .q-ic { font-size: 24px; }
+
+    /* ============ Dark mode: hero tetap hijau tapi lebih pekat ============ */
+    body.dark-mode .fh-hero { background: linear-gradient(135deg, #33511F 0%, #3E6327 55%, #2C471C 100%); }
+    body.dark-mode .fh-left h1 { color: #F2F7EC; }
+    body.dark-mode .fh-date { color: #D9E8C9; }
+    body.dark-mode .fh-badge { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.22); color: #EAF3DC; }
+    body.dark-mode .fh-btn-filled { background: #EDF4EA; color: #2F5B22; }
+    body.dark-mode .fh-btn-tonal { background: rgba(255,255,255,.12); color: #F2F7EC; border-color: rgba(255,255,255,.28); }
+    body.dark-mode .fh-btn-tonal:hover { background: rgba(255,255,255,.22); }
 
     @media (max-width: 640px) {
         .fh-hero { padding: 22px 20px; }
@@ -220,7 +229,7 @@ include __DIR__ . '/includes/header.php';
         <div class="fh-orb o4"></div>
     </div>
     <div class="fh-left">
-        <div class="fh-badge">Manajemen Santri</div>
+        <div class="fh-badge">Pondok Pesantren Fath Darut Tafsir</div>
         <h1><?= $sapaan ?>, <?= e($user['nama']) ?></h1>
         <p class="fh-date"><?= e($tgl_indo_full) ?></p>
     </div>
@@ -332,16 +341,26 @@ include __DIR__ . '/includes/header.php';
     document.querySelectorAll('[data-count]').forEach(countUp);
 })();
 
-// ---------- Grafik ----------
+// ---------- Grafik (dark-aware) ----------
+function santriChartColors() {
+    var dark = document.body.classList.contains('dark-mode');
+    return {
+        tick: dark ? '#8B9C83' : '#6F7F62',
+        grid: dark ? '#2B3824' : '#EAF3E1',
+        donutBorder: dark ? '#1C2418' : '#FFFFFF'
+    };
+}
+window.__santriCharts = [];
 document.addEventListener('DOMContentLoaded', function () {
     if (typeof Chart === 'undefined') return;
     Chart.defaults.font.family = "'Plus Jakarta Sans', system-ui, sans-serif";
-    Chart.defaults.color = '#6F7F62';
+    var cc = santriChartColors();
+    Chart.defaults.color = cc.tick;
 
     var elA = document.getElementById('chAktivitas');
     if (elA) {
         var d = <?= $json_aktivitas ?>;
-        new Chart(elA, {
+        var chA = new Chart(elA, {
             data: {
                 labels: d.label,
                 datasets: [
@@ -372,18 +391,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    y: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: '#EAF3E1' } },
-                    x: { grid: { display: false } }
+                    y: { beginAtZero: true, ticks: { precision: 0, color: cc.tick }, grid: { color: cc.grid } },
+                    x: { grid: { display: false }, ticks: { color: cc.tick } }
                 },
                 animation: { duration: 1100, easing: 'easeOutQuart' }
             }
         });
+        window.__santriCharts.push(chA);
     }
 
     var elD = document.getElementById('chAsrama');
     if (elD) {
         var a = <?= $json_asrama ?>;
-        new Chart(elD, {
+        var chD = new Chart(elD, {
             type: 'doughnut',
             data: {
                 labels: a.label,
@@ -391,7 +411,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     data: a.data,
                     backgroundColor: ['#75BF43','#4E8C2B','#A3D977','#2E8B57','#D7E8C3','#8FCE62'],
                     borderWidth: 3,
-                    borderColor: '#FFFFFF',
+                    borderColor: cc.donutBorder,
                     hoverOffset: 8
                 }]
             },
@@ -400,12 +420,34 @@ document.addEventListener('DOMContentLoaded', function () {
                 maintainAspectRatio: false,
                 cutout: '68%',
                 plugins: {
-                    legend: { position: 'bottom', labels: { boxWidth: 12, boxHeight: 12, borderRadius: 6, useBorderRadius: true, padding: 14 } }
+                    legend: { position: 'bottom', labels: { boxWidth: 12, boxHeight: 12, borderRadius: 6, useBorderRadius: true, padding: 14, color: cc.tick } }
                 },
                 animation: { animateRotate: true, duration: 1200, easing: 'easeOutQuart' }
             }
         });
+        window.__santriCharts.push(chD);
     }
+
+    // Perbarui warna grafik saat dark mode di-toggle (event dari footer.php)
+    document.addEventListener('santri:theme', function () {
+        var c2 = santriChartColors();
+        Chart.defaults.color = c2.tick;
+        window.__santriCharts.forEach(function (ch) {
+            if (ch.config.type === 'doughnut') {
+                ch.data.datasets[0].borderColor = c2.donutBorder;
+                if (ch.options.plugins && ch.options.plugins.legend && ch.options.plugins.legend.labels) {
+                    ch.options.plugins.legend.labels.color = c2.tick;
+                }
+            } else {
+                if (ch.options.scales.y) {
+                    ch.options.scales.y.grid.color = c2.grid;
+                    ch.options.scales.y.ticks.color = c2.tick;
+                }
+                if (ch.options.scales.x && ch.options.scales.x.ticks) ch.options.scales.x.ticks.color = c2.tick;
+            }
+            ch.update();
+        });
+    });
 });
 </script>
 

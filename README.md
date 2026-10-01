@@ -1,8 +1,8 @@
-# Aplikasi Manajemen Santri
+# Aplikasi Manajemen Santri — Pondok Pesantren Fath Darut Tafsir
 
-Sistem informasi pondok pesantren: data santri, asrama, kehadiran, hafalan (tahfidz),
+Sistem informasi Pondok Pesantren Fath Darut Tafsir: data santri, asrama, kehadiran, hafalan (tahfidz),
 keuangan (SPP + tabungan), dan pelanggaran/tata tertib. PHP + MySQL, gaya app PHP hiemz
-(mysqli prosedural, tanpa framework).
+(mysqli prosedural, tanpa framework). UI gaya FINO ceria (hijau) ala WMS 8090.
 
 ## Fitur (6 modul inti)
 

@@ -3,6 +3,10 @@
  * Helper umum: escaping, URL, redirect, query DB, format tanggal.
  */
 
+/** Branding pondok pesantren */
+if (!defined('APP_NAME')) define('APP_NAME', 'Fath Darut Tafsir');
+if (!defined('APP_FULL')) define('APP_FULL', 'Pondok Pesantren Fath Darut Tafsir');
+
 function e($s) {
     return htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8');
 }

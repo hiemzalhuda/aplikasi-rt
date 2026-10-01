@@ -34,7 +34,38 @@
     --ease-spring: cubic-bezier(.34, 1.56, .64, 1);
     --ease-out: cubic-bezier(.22, 1, .36, 1);
     --font: 'Plus Jakarta Sans', system-ui, -apple-system, "Segoe UI", sans-serif;
+    --input-bg: #FFFFFF;
+    --row-hover: #F7FAF3;
 }
+/* ---------- DARK MODE (FINO olive slate, pola WMS: selector body.dark-mode) ---------- */
+body.dark-mode {
+    --bg: #10140E;
+    --card: #1C2418;
+    --sidebar-bg: #171D14;
+    --banner: #293B21;
+    --border: #2B3824;
+    --text: #EDF4EA;
+    --text-soft: #8B9C83;
+    --text-faint: #5E6E52;
+    --brand: #85D64C;
+    --brand-hover: #9BE36B;
+    --brand-active: #75BF43;
+    --brand-soft: #293B21;
+    --on-brand: #10140E;
+    --ok-bg: #22301F;
+    --ok-text: #9BE36B;
+    --warn-bg: #2E2A18;
+    --warn-text: #E8B93E;
+    --err-bg: #2E1B18;
+    --err-text: #F0857C;
+    --input-bg: #141B12;
+    --row-hover: #24301F;
+    --shadow-card: 0 1px 2px rgba(0,0,0,.35), 0 6px 18px rgba(0,0,0,.3);
+    --shadow-pop: 0 12px 32px rgba(0,0,0,.5);
+}
+body.dark-mode .alert-ok { border-color: #3A5A34; }
+body.dark-mode .alert-err { border-color: #5A2E28; }
+body.dark-mode .sidebar { box-shadow: 4px 0 24px rgba(0,0,0,.4); }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {
@@ -53,13 +84,16 @@ body {
 a { color: var(--brand-hover); }
 ::selection { background: var(--brand); color: #fff; }
 
-/* ---------- Sidebar ---------- */
+/* ---------- Sidebar (floating rounded ala FINO) ---------- */
 .sidebar {
     width: 258px; flex-shrink: 0;
     background: var(--sidebar-bg);
-    border-right: 1px solid var(--border);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
     display: flex; flex-direction: column;
-    position: sticky; top: 0; height: 100vh;
+    position: sticky; top: 14px; height: calc(100vh - 28px);
+    margin: 14px 0 14px 14px;
     z-index: 20;
 }
 .brand { display: flex; gap: 12px; align-items: center; padding: 20px 18px 16px; }
@@ -166,12 +200,12 @@ th {
     white-space: nowrap;
 }
 tbody tr { transition: background .2s var(--ease-out); }
-tbody tr:hover { background: #F7FAF3; }
+tbody tr:hover { background: var(--row-hover); }
 tr:last-child td { border-bottom: none; }
 td select {
     font-family: var(--font); font-size: 13px; font-weight: 600; color: var(--text);
     padding: 7px 10px; border-radius: var(--radius-control);
-    border: 1px solid var(--border); background: #fff;
+    border: 1px solid var(--border); background: var(--input-bg);
     max-width: 180px; cursor: pointer;
 }
 td select:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(117,191,67,.18); }
@@ -194,7 +228,7 @@ td select:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3
 .field input, .field select, .field textarea {
     width: 100%; padding: 11px 13px; font-size: 14px; font-family: var(--font); font-weight: 500;
     border: 1px solid var(--border); border-radius: var(--radius-control);
-    background: #fff; color: var(--text);
+    background: var(--input-bg); color: var(--text);
     transition: border-color .2s var(--ease-out), box-shadow .2s var(--ease-out);
 }
 .field input::placeholder, .field textarea::placeholder { color: var(--text-faint); }
@@ -220,7 +254,7 @@ code {
     box-shadow: 0 3px 10px rgba(117,191,67,.3);
     transition: background .25s var(--ease-out), transform .3s var(--ease-spring), box-shadow .25s var(--ease-out);
 }
-.btn:hover { background: var(--brand-hover); transform: translateY(-2px); color: #fff; box-shadow: 0 6px 16px rgba(117,191,67,.35); }
+.btn:hover { background: var(--brand-hover); transform: translateY(-2px); color: var(--on-brand); box-shadow: 0 6px 16px rgba(117,191,67,.35); }
 .btn:active { background: var(--brand-active); transform: scale(.96); }
 .btn-sm { padding: 7px 13px; font-size: 13px; border-radius: 10px; box-shadow: none; }
 .btn-danger { background: var(--danger); box-shadow: 0 3px 10px rgba(217,83,74,.28); }
@@ -252,7 +286,7 @@ code {
 .alert-ok { background: var(--ok-bg); color: var(--ok-text); border-color: #CFE8C2; }
 .alert-err { background: var(--err-bg); color: var(--err-text); border-color: #F2CFCB; }
 
-/* ---------- Login ---------- */
+/* ---------- Login ala WMS (runaway button) ---------- */
 .login-wrap {
     min-height: 100vh; display: flex; align-items: center; justify-content: center;
     padding: 20px; position: relative; overflow: hidden;
@@ -266,18 +300,177 @@ code {
 .login-orb.o2 { width: 200px; height: 200px; bottom: -50px; right: 6%; animation-delay: -3s; }
 .login-orb.o3 { width: 140px; height: 140px; top: 18%; right: 16%; animation-delay: -6s; }
 @keyframes floatY { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-22px); } }
-.login-card {
+.sn-login {
+    position: relative; z-index: 1; width: 100%; max-width: 430px;
     background: var(--card); border: 1px solid var(--border);
     border-radius: 24px;
     box-shadow: var(--shadow-pop);
-    padding: 38px 36px; width: 100%; max-width: 400px;
-    position: relative; z-index: 1;
-    animation: fadeUp .55s var(--ease-out) both;
+    padding: 0 0 24px; text-align: center;
+    animation: snCardIn .55s cubic-bezier(.2,.9,.3,1.15) both;
 }
-.login-card h2 { margin: 0 0 6px; font-weight: 800; font-size: 24px; letter-spacing: -.02em; color: var(--text); }
-.login-card p { color: var(--text-soft); font-size: 14px; margin: 0 0 22px; }
-.login-card .field { margin-bottom: 14px; }
-.login-card .btn { width: 100%; padding: 13px; font-size: 15px; }
+@keyframes snCardIn { from { opacity: 0; transform: translateY(20px) scale(.97); } to { opacity: 1; transform: none; } }
+.sn-login.shake { animation: snShake .45s; }
+@keyframes snShake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-10px); } 40% { transform: translateX(9px); } 60% { transform: translateX(-6px); } 80% { transform: translateX(4px); } }
+.sn-winbar { display: flex; align-items: center; gap: 7px; padding: 14px 18px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+.sn-dot { width: 11px; height: 11px; border-radius: 50%; }
+.sn-dot-r { background: #FF5F57; } .sn-dot-y { background: #FEBC2E; } .sn-dot-g { background: #28C840; }
+.sn-sysid { margin-left: auto; font-size: 10px; letter-spacing: 1.8px; color: var(--text-faint); font-weight: 700; }
+.sn-dark-btn {
+    width: 32px; height: 32px; border-radius: 9px; border: 1px solid var(--border);
+    background: var(--banner); color: var(--text-soft); font-size: 13px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    transition: transform .3s var(--ease-spring), background .2s, color .2s;
+}
+.sn-dark-btn:hover { background: var(--brand-soft); color: var(--text); }
+.sn-dark-btn:active { transform: scale(.88); }
+.sn-logo {
+    width: 76px; height: 76px; margin: 0 auto 14px; border-radius: 22px;
+    background: linear-gradient(135deg, var(--brand), var(--brand-hover));
+    color: #fff; font-size: 34px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 24px rgba(117,191,67,.28);
+}
+.sn-login h3 { font-weight: 800; color: var(--text); margin: 0 0 6px; font-size: 21px; letter-spacing: -.02em; padding: 0 24px; }
+.sn-sub { color: var(--text-soft); font-size: 13px; margin: 0 0 6px; padding: 0 24px; }
+.sn-hint { color: var(--text-faint); font-size: 12px; margin: 0 0 18px; padding: 0 24px; min-height: 1.4em; font-weight: 600; }
+.sn-error {
+    margin: 0 22px 16px; padding: 10px 12px; border-radius: 12px;
+    font-size: 13px; font-weight: 600; text-align: center;
+    background: var(--err-bg); color: var(--err-text); border: 1px dashed var(--err-text);
+}
+.sn-login .l-field { margin-bottom: 16px; text-align: left; padding: 0 22px; }
+.sn-login .l-label { display: block; font-size: 11px; font-weight: 700; color: var(--text-soft); margin: 0 0 6px 4px; letter-spacing: 1.2px; }
+.sn-login .l-input-wrap { position: relative; }
+.sn-login input.sn-input {
+    width: 100%; border-radius: 14px; padding: 13px 16px 13px 42px;
+    background: var(--input-bg); border: 1px solid var(--border);
+    font-family: var(--font); font-weight: 600; font-size: 15px; color: var(--text);
+    transition: border-color .2s, box-shadow .2s, background .2s;
+}
+.sn-login input.sn-input::placeholder { color: var(--text-faint); font-weight: 500; }
+.sn-login input.sn-input:focus {
+    outline: none; border-color: var(--brand); background: var(--card);
+    box-shadow: 0 0 0 4px rgba(117,191,67,.14);
+}
+.sn-login .l-input-group-text {
+    position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
+    color: var(--text-faint); font-size: 15px; pointer-events: none; z-index: 2;
+    transition: color .2s;
+}
+.sn-login .l-input-wrap:focus-within .l-input-group-text { color: var(--brand-active); }
+/* Zona tombol kabur */
+.sn-zone { position: relative; height: 116px; margin-top: 6px; }
+.sn-home {
+    position: absolute; left: 22px; right: 22px; top: 50%; height: 52px;
+    transform: translateY(-50%);
+    border: 1.5px dashed var(--border); border-radius: 999px;
+    transition: opacity .35s, border-color .35s;
+}
+.sn-login.armed .sn-home { opacity: 0; }
+.sn-btn {
+    position: absolute; left: 50%; top: 50%;
+    width: 240px; max-width: calc(100% - 44px);
+    transform: translate(-50%, -50%);
+    border: none; border-radius: 999px; padding: 15px; margin: 0;
+    background: linear-gradient(135deg, var(--brand) 0%, var(--brand-hover) 55%, var(--brand-active) 100%);
+    color: var(--on-brand); font-family: var(--font); font-weight: 800; font-size: 15px; letter-spacing: .8px; cursor: pointer;
+    box-shadow: 0 8px 24px rgba(117,191,67,.3);
+    will-change: transform; transition: box-shadow .3s;
+}
+.sn-btn::after {
+    content: ''; position: absolute; inset: -3px; border-radius: inherit;
+    background: radial-gradient(ellipse at 30% 30%, rgba(133,214,76,.7), rgba(78,140,43,.75));
+    filter: blur(7px); opacity: 0; z-index: -1; pointer-events: none;
+    transition: opacity .4s;
+}
+.sn-login:not(.armed) .sn-btn::after { opacity: 1; animation: snSlime 1.6s ease-in-out infinite; }
+.sn-login.armed .sn-btn::after { opacity: 0; animation: none; }
+@keyframes snSlime {
+    0%,100% { transform: scale(1,1) skewX(0deg); }
+    30% { transform: scale(1.06,.94) skewX(-2.5deg); border-radius: 60% 40% 55% 45% / 50% 60% 40% 50%; }
+    65% { transform: scale(.94,1.07) skewX(2.5deg); border-radius: 45% 55% 40% 60% / 58% 42% 62% 38%; }
+}
+.sn-login.armed .sn-btn { animation: snPulse 2.2s ease-in-out infinite; }
+@keyframes snPulse {
+    0%,100% { box-shadow: 0 8px 24px rgba(117,191,67,.35); }
+    50% { box-shadow: 0 8px 44px rgba(117,191,67,.6); }
+}
+.sn-login:not(.armed) .sn-btn { opacity: .6; filter: saturate(.7); }
+.sn-btn.loading { pointer-events: none; letter-spacing: 1.4px; opacity: .8; }
+.sn-foot { margin: 18px 0 0; font-size: 10.5px; letter-spacing: 1.6px; color: var(--text-faint); font-weight: 700; }
+@media (prefers-reduced-motion: reduce) {
+    .sn-login:not(.armed) .sn-btn::after, .sn-login.armed .sn-btn { animation: none; }
+}
+
+/* ---------- Page transition (halus, <300ms) ---------- */
+.app { transition: opacity .18s var(--ease-out), transform .18s var(--ease-out); }
+body.page-leave .app { opacity: 0; transform: translateY(12px); }
+@media (prefers-reduced-motion: reduce) {
+    .app { transition: none; }
+    body.page-leave .app { opacity: 1; transform: none; }
+}
+
+/* ---------- Topbar widgets: jam, jadwal sholat, dark toggle ---------- */
+.topbar-widgets { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+.tb-clock, .tb-prayer {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--banner); border: 1px solid var(--border);
+    padding: 7px 14px; border-radius: var(--radius-badge);
+    font-size: 13px; font-weight: 700; color: var(--text);
+    white-space: nowrap;
+}
+.tb-clock { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .02em; }
+.tb-clock i, .tb-prayer > i { color: var(--brand-active); }
+.tb-prayer { cursor: pointer; transition: transform .3s var(--ease-spring), background .2s; }
+.tb-prayer:hover { transform: translateY(-2px); }
+.tb-prayer:active { transform: scale(.95); }
+.tb-prayer-in { line-height: 1.15; text-align: left; }
+.tb-prayer-in small { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-soft); display: block; }
+.tb-prayer-in strong { font-size: 13px; font-weight: 800; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.icon-btn {
+    width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0;
+    border: 1px solid var(--border); background: var(--card); color: var(--text);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 16px; cursor: pointer;
+    transition: transform .3s var(--ease-spring), background .2s var(--ease-out);
+}
+.icon-btn:hover { background: var(--banner); transform: translateY(-2px); }
+.icon-btn:active { transform: scale(.9); }
+
+/* ---------- Popup jadwal sholat (pola WMS) ---------- */
+.prayer-modal { position: fixed; inset: 0; z-index: 100; background: transparent; opacity: 0; pointer-events: none; transition: opacity .25s var(--ease-out); }
+.prayer-modal.open { opacity: 1; pointer-events: auto; }
+.prayer-box {
+    position: absolute; width: 300px; max-width: calc(100vw - 24px);
+    background: var(--card); border: 1px solid var(--border); border-radius: 18px;
+    box-shadow: var(--shadow-pop); padding: 18px 18px 14px;
+    transform: scale(.92) translateY(-8px); opacity: 0;
+    transition: transform .3s var(--ease-spring), opacity .25s var(--ease-out);
+}
+.prayer-modal.open .prayer-box { transform: none; opacity: 1; }
+.prayer-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
+.prayer-head h3 { margin: 0; font-size: 15px; font-weight: 800; color: var(--text); }
+.prayer-close {
+    border: none; background: transparent; color: var(--text-soft);
+    font-size: 15px; cursor: pointer; padding: 6px; border-radius: 8px;
+    transition: transform .3s var(--ease-spring), color .2s;
+}
+.prayer-close:hover { transform: scale(1.12); color: var(--text); }
+.prayer-close:active { transform: scale(.88); }
+.prayer-date { font-size: 12px; color: var(--text-soft); margin-bottom: 10px; }
+.prayer-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 9px 12px; border-radius: 10px; font-size: 14px; color: var(--text);
+    transition: background .2s var(--ease-out);
+}
+.prayer-row:hover { background: var(--row-hover); }
+.prayer-row .pn { font-weight: 600; display: flex; align-items: center; gap: 9px; }
+.prayer-row .pn i { color: var(--brand-active); font-size: 13px; width: 16px; text-align: center; }
+.prayer-row .pt { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-weight: 700; }
+.prayer-row.next { background: var(--brand-soft); font-weight: 700; }
+.prayer-row.next .pn i { animation: pulsePray 2s ease-in-out infinite; }
+@keyframes pulsePray { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .5; transform: scale(1.25); } }
+.prayer-foot { margin-top: 10px; font-size: 11px; color: var(--text-faint); text-align: center; }
 
 /* ---------- Responsif ---------- */
 @media (max-width: 900px) {
@@ -288,7 +481,12 @@ code {
 }
 @media (max-width: 640px) {
     .app { flex-direction: column; }
-    .sidebar { width: 100%; height: auto; position: static; border-right: none; border-bottom: 1px solid var(--border); }
+    .sidebar {
+        width: 100%; height: auto; position: static;
+        margin: 0; border-radius: 0; border: none;
+        border-bottom: 1px solid var(--border);
+        box-shadow: none;
+    }
     .brand { padding: 14px 16px 10px; }
     .nav { flex-direction: row; overflow-x: auto; padding: 8px 10px; }
     .nav-link { white-space: nowrap; padding: 8px 12px; font-size: 13.5px; }
@@ -300,5 +498,6 @@ code {
     .topbar { top: 10px; margin: 10px 12px 0; padding: 12px 16px; }
     .topbar h1 { font-size: 18px; }
     .topbar-date { display: none; }
+    .tb-prayer-in small { display: none; }
     .stat-num { font-size: 30px; }
 }
