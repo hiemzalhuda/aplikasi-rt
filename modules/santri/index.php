@@ -7,6 +7,7 @@ $user = require_login();
 $title = 'Data Santri';
 $menu = 'santri';
 $can_edit = in_array($user['role'], array('admin', 'pengasuh'), true);
+$upload_dir = __DIR__ . '/../../uploads/santri';
 
 /* Kata kunci pencarian (GET). */
 $q = trim($_GET['q'] ?? '');
@@ -45,10 +46,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tambah'])) {
     } elseif ($kamar_id !== '' && !kamar_valid($koneksi, $kamar_id)) {
         flash_set('Kamar yang dipilih tidak valid.', 'err');
     } else {
-        $ok = db_exec($koneksi,
-            'INSERT INTO santri (nis, nama, jenis_kelamin, tempat_lahir, tgl_lahir, alamat, no_hp, tgl_masuk)
-             VALUES (?,?,?,?,?,?,?,?)',
-            'ssssssss', array($nis, $nama, $jk, $tpl, $lahir, $alamat, $hp, $masuk));
+        list($foto, $ferr) = upload_foto_santri($_FILES['foto'] ?? array(), null, $upload_dir);
+        if ($ferr) {
+            flash_set($ferr, 'err');
+        } else {
+            $ok = db_exec($koneksi,
+                'INSERT INTO santri (nis, nama, jenis_kelamin, tempat_lahir, tgl_lahir, alamat, no_hp, tgl_masuk, foto)
+                 VALUES (?,?,?,?,?,?,?,?,?)',
+                'sssssssss', array($nis, $nama, $jk, $tpl, $lahir, $alamat, $hp, $masuk, $foto));
         if ($ok) {
             $sid = (int) $koneksi->insert_id;
             if ($kamar_id !== '') {
@@ -59,6 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tambah'])) {
             flash_set('Santri berhasil ditambahkan.', 'ok');
         } else {
             flash_set('Gagal menambah santri (mungkin NIS sudah dipakai).', 'err');
+        }
         }
     }
     redirect('modules/santri/' . ($q ? '?q=' . urlencode($q) : ''));
@@ -209,7 +215,7 @@ include __DIR__ . '/../../includes/header.php';
             <button type="button" class="sn-modal-close" data-snmodal-close aria-label="Tutup"><i class="fas fa-times"></i></button>
         </div>
         <div class="sn-modal-body">
-            <form method="post" action="">
+            <form method="post" action="" enctype="multipart/form-data">
                 <div class="form-grid">
                     <div class="field"><label>NIS</label><input type="text" name="nis" required maxlength="20"></div>
                     <div class="field"><label>Nama Lengkap</label><input type="text" name="nama" required maxlength="100"></div>
@@ -218,9 +224,10 @@ include __DIR__ . '/../../includes/header.php';
                     </div>
                     <div class="field"><label>Tempat Lahir</label><input type="text" name="tempat_lahir" maxlength="60"></div>
                     <div class="field"><label>Tanggal Lahir</label><input type="date" name="tgl_lahir"></div>
-                    <div class="field"><label>No. HP</label><input type="text" name="no_hp" maxlength="20"></div>
                     <div class="field"><label>Alamat</label><input type="text" name="alamat" maxlength="255"></div>
+                    <div class="field"><label>No. HP</label><input type="text" name="no_hp" maxlength="20"></div>
                     <div class="field"><label>Tanggal Mendaftar</label><input type="date" name="tgl_masuk" value="<?= date('Y-m-d') ?>"></div>
+                    <div class="field"><label>Foto (jpg/png/webp, maks 2MB)</label><input type="file" name="foto" accept="image/jpeg,image/png,image/webp"></div>
                     <div class="field"><label>Kamar</label>
                         <select name="kamar_id">
                             <option value="">-- Belum ditempatkan --</option>

@@ -532,8 +532,8 @@ body.dark-mode .profil-lama strong { color: #9BD96A; }
 }
 
 /* ================= MODAL POPUP (FINO) ================= */
-.sn-modal { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; padding: 18px; background: rgba(15, 23, 12, .55); backdrop-filter: blur(4px); opacity: 0; pointer-events: none; transition: opacity .22s var(--ease-out, ease); }
-.sn-modal.open { opacity: 1; pointer-events: auto; }
+.sn-modal { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; padding: 18px; background: rgba(15, 23, 12, .55); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .22s var(--ease-out, ease), visibility 0s linear .25s; }
+.sn-modal.open { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity .22s var(--ease-out, ease); }
 .sn-modal-box { background: var(--card); border-radius: 20px; box-shadow: 0 24px 70px rgba(20, 40, 15, .35); width: 100%; max-width: 640px; max-height: 90vh; overflow-y: auto; transform: translateY(16px) scale(.97); opacity: 0; transition: transform .28s cubic-bezier(.22,1,.36,1), opacity .22s ease; border: 1px solid var(--border); }
 .sn-modal.open .sn-modal-box { transform: none; opacity: 1; }
 .sn-modal-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 22px 0; }

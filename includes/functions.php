@@ -112,3 +112,32 @@ function flash_get() {
     $cls = $f['type'] === 'err' ? 'alert-err' : 'alert-ok';
     return '<div class="alert ' . $cls . '">' . e($f['msg']) . '</div>';
 }
+
+/** Validasi nama file foto yg tersimpan di DB (anti path traversal). */
+function foto_ok($f) {
+    return $f && preg_match('/^[A-Za-z0-9._-]+$/', $f);
+}
+
+/** Proses upload foto santri baru; return array(nama_file, pesan_error). */
+function upload_foto_santri($file, $old, $upload_dir) {
+    if (empty($file['name'])) return array($old, null);
+    if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+        return array($old, 'Upload foto gagal.');
+    }
+    $allowed = array('jpg' => 1, 'jpeg' => 1, 'png' => 1, 'webp' => 1);
+    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    if (!isset($allowed[$ext])) return array($old, 'Format foto harus jpg, png, atau webp.');
+    if ($file['size'] > 2 * 1024 * 1024) return array($old, 'Ukuran foto maksimal 2 MB.');
+    if (!@getimagesize($file['tmp_name'])) return array($old, 'File bukan gambar yang valid.');
+    if (!is_dir($upload_dir) && !@mkdir($upload_dir, 0775, true)) {
+        return array($old, 'Direktori upload tidak tersedia.');
+    }
+    $name = 'santri-' . bin2hex(random_bytes(8)) . '.' . $ext;
+    if (!@move_uploaded_file($file['tmp_name'], $upload_dir . '/' . $name)) {
+        return array($old, 'Gagal menyimpan foto.');
+    }
+    if (foto_ok($old) && $old !== $name && file_exists($upload_dir . '/' . $old)) {
+        @unlink($upload_dir . '/' . $old);
+    }
+    return array($name, null);
+}
