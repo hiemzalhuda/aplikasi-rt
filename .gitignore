@@ -1,0 +1,18 @@
+# Kredensial & environment — JANGAN commit
+config/database.php
+.env
+*.env
+
+# Upload user
+uploads/*
+!uploads/.gitkeep
+
+# Backup & log
+*.bak*
+*.log
+*.swp
+*~
+
+# OS
+.DS_Store
+Thumbs.db
