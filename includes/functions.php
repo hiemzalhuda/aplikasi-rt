@@ -27,6 +27,15 @@ function url($p = '') {
     return base_path() . '/' . ltrim($p, '/');
 }
 
+/* URL aset dengan cache-buster: ?v=filemtime agar browser selalu ambil
+   CSS terbaru setiap kali file berubah (tidak lagi tertahan cache lama). */
+function asset_v($rel) {
+    $rel = ltrim($rel, '/');
+    $fs = __DIR__ . '/../' . $rel;
+    $v = @filemtime($fs);
+    return url($rel) . ($v ? '?v=' . $v : '');
+}
+
 function redirect($p = '') {
     header('Location: ' . url($p));
     exit;
