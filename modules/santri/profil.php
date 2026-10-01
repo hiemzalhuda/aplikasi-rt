@@ -162,6 +162,13 @@ include __DIR__ . '/../../includes/header.php';
                 <span class="badge"><?= $s['jenis_kelamin'] === 'P' ? 'Perempuan' : 'Laki-laki' ?></span>
             </div>
             <p class="profil-lama">Menjadi santri selama <strong><?= e(lama_santri($s['tgl_masuk'])) ?></strong></p>
+            <?php if ($can_edit): ?>
+            <p style="margin:12px 0 0">
+                <button type="button" class="btn btn-sm" data-snmodal-open="modalEditSantri">
+                    <i class="fas fa-pen" style="margin-right:6px"></i>Edit Data
+                </button>
+            </p>
+            <?php endif; ?>
         </div>
     </div>
 </div>
@@ -297,29 +304,39 @@ include __DIR__ . '/../../includes/header.php';
     <?php endif; ?>
 </div>
 
-<!-- ======== Edit data (admin + pengasuh) ======== -->
+<!-- ======== Edit data (admin + pengasuh): modal popup ======== -->
 <?php if ($can_edit): ?>
-<div class="card" style="margin-bottom:18px">
-    <h3>Edit Data Santri</h3>
-    <form method="post" action="" enctype="multipart/form-data">
-        <div class="form-grid">
-            <div class="field"><label>NIS</label><input type="text" value="<?= e($s['nis']) ?>" disabled></div>
-            <div class="field"><label>Nama Lengkap</label><input type="text" name="nama" required maxlength="100" value="<?= e($s['nama']) ?>"></div>
-            <div class="field"><label>Jenis Kelamin</label>
-                <select name="jenis_kelamin">
-                    <option value="L"<?= $s['jenis_kelamin'] === 'L' ? ' selected' : '' ?>>Laki-laki</option>
-                    <option value="P"<?= $s['jenis_kelamin'] === 'P' ? ' selected' : '' ?>>Perempuan</option>
-                </select>
-            </div>
-            <div class="field"><label>Tempat Lahir</label><input type="text" name="tempat_lahir" maxlength="60" value="<?= e($s['tempat_lahir']) ?>"></div>
-            <div class="field"><label>Tanggal Lahir</label><input type="date" name="tgl_lahir" value="<?= e($s['tgl_lahir']) ?>"></div>
-            <div class="field"><label>Alamat</label><input type="text" name="alamat" maxlength="255" value="<?= e($s['alamat']) ?>"></div>
-            <div class="field"><label>No. HP</label><input type="text" name="no_hp" maxlength="20" value="<?= e($s['no_hp']) ?>"></div>
-            <div class="field"><label>Tanggal Mendaftar</label><input type="date" name="tgl_masuk" value="<?= e($s['tgl_masuk']) ?>"></div>
-            <div class="field"><label>Foto (jpg/png/webp, maks 2MB)</label><input type="file" name="foto" accept="image/jpeg,image/png,image/webp"></div>
+<div class="sn-modal" id="modalEditSantri" role="dialog" aria-modal="true" aria-label="Edit Data Santri">
+    <div class="sn-modal-box">
+        <div class="sn-modal-head">
+            <h3><i class="fas fa-pen" style="margin-right:8px;color:var(--brand-active)"></i>Edit Data Santri</h3>
+            <button type="button" class="sn-modal-close" data-snmodal-close aria-label="Tutup"><i class="fas fa-times"></i></button>
         </div>
-        <div class="form-actions"><button type="submit" name="simpan_profil" class="btn">Simpan Perubahan</button></div>
-    </form>
+        <div class="sn-modal-body">
+            <form method="post" action="" enctype="multipart/form-data">
+                <div class="form-grid">
+                    <div class="field"><label>NIS</label><input type="text" value="<?= e($s['nis']) ?>" disabled></div>
+                    <div class="field"><label>Nama Lengkap</label><input type="text" name="nama" required maxlength="100" value="<?= e($s['nama']) ?>"></div>
+                    <div class="field"><label>Jenis Kelamin</label>
+                        <select name="jenis_kelamin">
+                            <option value="L"<?= $s['jenis_kelamin'] === 'L' ? ' selected' : '' ?>>Laki-laki</option>
+                            <option value="P"<?= $s['jenis_kelamin'] === 'P' ? ' selected' : '' ?>>Perempuan</option>
+                        </select>
+                    </div>
+                    <div class="field"><label>Tempat Lahir</label><input type="text" name="tempat_lahir" maxlength="60" value="<?= e($s['tempat_lahir']) ?>"></div>
+                    <div class="field"><label>Tanggal Lahir</label><input type="date" name="tgl_lahir" value="<?= e($s['tgl_lahir']) ?>"></div>
+                    <div class="field"><label>Alamat</label><input type="text" name="alamat" maxlength="255" value="<?= e($s['alamat']) ?>"></div>
+                    <div class="field"><label>No. HP</label><input type="text" name="no_hp" maxlength="20" value="<?= e($s['no_hp']) ?>"></div>
+                    <div class="field"><label>Tanggal Mendaftar</label><input type="date" name="tgl_masuk" value="<?= e($s['tgl_masuk']) ?>"></div>
+                    <div class="field"><label>Foto (jpg/png/webp, maks 2MB)</label><input type="file" name="foto" accept="image/jpeg,image/png,image/webp"></div>
+                </div>
+                <div class="form-actions" style="margin-top:18px">
+                    <button type="button" class="btn btn-ghost" data-snmodal-close>Batal</button>
+                    <button type="submit" name="simpan_profil" class="btn">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 <?php endif; ?>
 

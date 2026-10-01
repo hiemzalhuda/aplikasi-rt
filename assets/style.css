@@ -530,3 +530,40 @@ body.dark-mode .profil-lama strong { color: #9BD96A; }
     .profil-foto, .profil-avatar { width: 88px; height: 88px; font-size: 32px; }
     .profil-head h2 { font-size: 20px; }
 }
+
+/* ================= MODAL POPUP (FINO) ================= */
+.sn-modal { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; padding: 18px; background: rgba(15, 23, 12, .55); backdrop-filter: blur(4px); opacity: 0; pointer-events: none; transition: opacity .22s var(--ease-out, ease); }
+.sn-modal.open { opacity: 1; pointer-events: auto; }
+.sn-modal-box { background: var(--card); border-radius: 20px; box-shadow: 0 24px 70px rgba(20, 40, 15, .35); width: 100%; max-width: 640px; max-height: 90vh; overflow-y: auto; transform: translateY(16px) scale(.97); opacity: 0; transition: transform .28s cubic-bezier(.22,1,.36,1), opacity .22s ease; border: 1px solid var(--border); }
+.sn-modal.open .sn-modal-box { transform: none; opacity: 1; }
+.sn-modal-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 22px 0; }
+.sn-modal-head h3 { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: -.01em; }
+.sn-modal-close { border: none; background: var(--banner); color: var(--text); width: 34px; height: 34px; border-radius: 50%; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform .15s ease, background .15s ease; }
+.sn-modal-close:hover { transform: rotate(90deg); background: var(--border); }
+.sn-modal-body { padding: 16px 22px 22px; }
+
+/* ================= PENCARIAN GLOBAL DI HEADER ================= */
+.sn-search { position: relative; margin-right: 4px; }
+.sn-search form { display: flex; align-items: center; }
+.sn-search .sn-search-input { width: 230px; max-width: 38vw; padding: 9px 14px 9px 36px; border-radius: 999px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); font-size: 13.5px; font-family: inherit; outline: none; transition: width .2s ease, border-color .2s ease, box-shadow .2s ease; }
+.sn-search .sn-search-input:focus { width: 280px; border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-soft); }
+.sn-search .sn-search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-faint); font-size: 13px; pointer-events: none; }
+.sn-search-results { position: absolute; top: calc(100% + 8px); left: 0; right: 0; min-width: 260px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 16px 40px rgba(20, 40, 15, .25); overflow: hidden; z-index: 150; display: none; }
+.sn-search-results.open { display: block; }
+.sn-search-results a { display: block; padding: 10px 14px; text-decoration: none; color: var(--text); border-bottom: 1px solid var(--border); }
+.sn-search-results a:last-child { border-bottom: none; }
+.sn-search-results a:hover, .sn-search-results a.active { background: var(--banner); }
+.sn-search-results .sr-nama { font-weight: 700; font-size: 13.5px; }
+.sn-search-results .sr-nis { font-size: 12px; color: var(--text-soft); }
+.sn-search-results .sr-empty { padding: 12px 14px; font-size: 13px; color: var(--text-soft); }
+
+/* ================= BARIS AKSI + SEARCH DI HALAMAN SANTRI ================= */
+.sn-pagebar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.sn-pagebar .sn-search { margin-right: auto; }
+.sn-pagebar .sn-search .sn-search-input { width: 260px; max-width: 60vw; }
+@media (max-width: 640px) {
+    .sn-search .sn-search-input, .sn-pagebar .sn-search .sn-search-input { width: 100%; max-width: none; }
+    .sn-search .sn-search-input:focus { width: 100%; }
+    .sn-pagebar .sn-search { flex: 1 1 100%; margin-right: 0; }
+    .topbar .sn-search { display: none; } /* di HP, pakai search di halaman santri */
+}

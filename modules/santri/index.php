@@ -3,9 +3,13 @@ require_once __DIR__ . '/../../includes/auth.php';
 require_once __DIR__ . '/../../includes/functions.php';
 require_once __DIR__ . '/../../config/koneksi.php';
 
-require_login();
+$user = require_login();
 $title = 'Data Santri';
 $menu = 'santri';
+$can_edit = in_array($user['role'], array('admin', 'pengasuh'), true);
+
+/* Kata kunci pencarian (GET). */
+$q = trim($_GET['q'] ?? '');
 
 /** Daftar kamar untuk dropdown (dikelompokkan per asrama). */
 $kamar_list = db_all($koneksi,
@@ -22,12 +26,19 @@ function kamar_valid($koneksi, $kamar_id) {
 
 /* ---------- Tambah santri (sekaligus penempatan kamar bila dipilih) ---------- */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tambah'])) {
+    if (!$can_edit) {
+        http_response_code(403);
+        die('Akses ditolak untuk role ini.');
+    }
     $nis      = trim($_POST['nis'] ?? '');
     $nama     = trim($_POST['nama'] ?? '');
     $jk       = $_POST['jenis_kelamin'] ?? 'L';
-    $lahir    = $_POST['tgl_lahir'] ?? null;
-    $masuk    = $_POST['tgl_masuk'] ?? date('Y-m-d');
-    $alamat   = trim($_POST['alamat'] ?? '');
+    if (!in_array($jk, array('L', 'P'), true)) $jk = 'L';
+    $tpl      = trim($_POST['tempat_lahir'] ?? '') ?: null;
+    $lahir    = $_POST['tgl_lahir'] ?: null;
+    $alamat   = trim($_POST['alamat'] ?? '') ?: null;
+    $hp       = trim($_POST['no_hp'] ?? '') ?: null;
+    $masuk    = $_POST['tgl_masuk'] ?: date('Y-m-d');
     $kamar_id = trim($_POST['kamar_id'] ?? '');
     if ($nis === '' || $nama === '') {
         flash_set('NIS dan nama wajib diisi.', 'err');
@@ -35,8 +46,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tambah'])) {
         flash_set('Kamar yang dipilih tidak valid.', 'err');
     } else {
         $ok = db_exec($koneksi,
-            'INSERT INTO santri (nis, nama, jenis_kelamin, tgl_lahir, alamat, tgl_masuk) VALUES (?,?,?,?,?,?)',
-            'ssssss', array($nis, $nama, $jk, $lahir, $alamat, $masuk));
+            'INSERT INTO santri (nis, nama, jenis_kelamin, tempat_lahir, tgl_lahir, alamat, no_hp, tgl_masuk)
+             VALUES (?,?,?,?,?,?,?,?)',
+            'ssssssss', array($nis, $nama, $jk, $tpl, $lahir, $alamat, $hp, $masuk));
         if ($ok) {
             $sid = (int) $koneksi->insert_id;
             if ($kamar_id !== '') {
@@ -49,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tambah'])) {
             flash_set('Gagal menambah santri (mungkin NIS sudah dipakai).', 'err');
         }
     }
-    redirect('modules/santri/');
+    redirect('modules/santri/' . ($q ? '?q=' . urlencode($q) : ''));
 }
 
 /* ---------- Toggle status aktif/nonaktif ---------- */
@@ -98,45 +110,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['pindah_kamar'])) {
     redirect('modules/santri/');
 }
 
+/* ---------- Pencarian (nama / NIS / alamat) ---------- */
+$where = '';
+$params = array();
+$types = '';
+if ($q !== '') {
+    $like = '%' . $q . '%';
+    $where = "WHERE s.nama LIKE ? OR s.nis LIKE ? OR s.alamat LIKE ?";
+    $params = array($like, $like, $like);
+    $types = 'sss';
+}
+
 $rows = db_all($koneksi,
     'SELECT s.*, k.nama AS kamar, a.nama AS asrama, ps.kamar_id AS kamar_aktif_id
      FROM santri s
      LEFT JOIN penempatan_santri ps ON ps.santri_id = s.id AND ps.tgl_selesai IS NULL
      LEFT JOIN kamar k ON k.id = ps.kamar_id
      LEFT JOIN asrama a ON a.id = k.asrama_id
-     ORDER BY s.nama ASC');
+     ' . $where . '
+     ORDER BY s.nama ASC', $types, $params);
 
 include __DIR__ . '/../../includes/header.php';
 ?>
 
-<div class="form-card">
-    <h2 class="section-title" style="margin-top:0">Tambah Santri</h2>
-    <form method="post" action="">
-        <div class="form-grid">
-            <div class="field"><label>NIS</label><input type="text" name="nis" required maxlength="20"></div>
-            <div class="field"><label>Nama Lengkap</label><input type="text" name="nama" required maxlength="100"></div>
-            <div class="field"><label>Jenis Kelamin</label>
-                <select name="jenis_kelamin"><option value="L">Laki-laki</option><option value="P">Perempuan</option></select>
-            </div>
-            <div class="field"><label>Tanggal Lahir</label><input type="date" name="tgl_lahir"></div>
-            <div class="field"><label>Alamat</label><input type="text" name="alamat" maxlength="255"></div>
-            <div class="field"><label>Tanggal Mendaftar</label><input type="date" name="tgl_masuk" value="<?= date('Y-m-d') ?>"></div>
-            <div class="field"><label>Kamar</label>
-                <select name="kamar_id">
-                    <option value="">-- Belum ditempatkan --</option>
-                    <?php foreach ($kamar_list as $k): ?>
-                        <option value="<?= (int) $k['id'] ?>"><?= e($k['kamar'] . ' / ' . $k['asrama']) ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-        </div>
-        <div class="form-actions"><button type="submit" name="tambah" class="btn">Simpan</button></div>
+<div class="sn-pagebar">
+    <form method="get" action="" class="sn-search" role="search">
+        <span class="sn-search-icon"><i class="fas fa-search"></i></span>
+        <input type="text" name="q" class="sn-search-input" placeholder="Cari nama, NIS, atau alamat..."
+               value="<?= e($q) ?>" autocomplete="off">
     </form>
+    <?php if ($can_edit): ?>
+    <button type="button" class="btn" data-snmodal-open="modalTambahSantri">
+        <i class="fas fa-plus" style="margin-right:6px"></i>Tambah Santri
+    </button>
+    <?php endif; ?>
 </div>
+
+<?php if ($q !== ''): ?>
+<p style="margin:-6px 0 14px;color:var(--text-soft);font-size:13.5px">
+    Hasil pencarian untuk <strong>"<?= e($q) ?>"</strong> (<?= count($rows) ?> santri)
+    <a href="<?= url('modules/santri/') ?>" class="tbl-link" style="margin-left:8px">Atur ulang</a>
+</p>
+<?php endif; ?>
 
 <div class="table-wrap">
 <table>
-    <thead><tr><th>NIS</th><th>Nama</th><th>L/P</th><th>Tgl Lahir</th><th>Alamat</th><th>Tgl Daftar</th><th>Kamar</th><th>Status</th></tr></thead>
+    <thead><tr><th>NIS</th><th>Nama</th><th>L/P</th><th>Tgl Lahir</th><th>Alamat</th><th>Kamar</th><th>Tgl Daftar</th><th>Status</th></tr></thead>
     <tbody>
     <?php if (!$rows): ?>
         <tr><td colspan="8" class="empty">Belum ada data santri.</td></tr>
@@ -147,7 +166,6 @@ include __DIR__ . '/../../includes/header.php';
             <td><?= e($r['jenis_kelamin']) ?></td>
             <td><?= e(tgl_indo($r['tgl_lahir'])) ?></td>
             <td><?= e($r['alamat'] ?: '-') ?></td>
-            <td><?= e(tgl_indo($r['tgl_masuk'])) ?></td>
             <td>
                 <?php if ($r['status'] === 'aktif'): ?>
                 <form method="post" action="" style="display:inline">
@@ -164,6 +182,7 @@ include __DIR__ . '/../../includes/header.php';
                     <span style="color:#999">-</span>
                 <?php endif; ?>
             </td>
+            <td><?= e(tgl_indo($r['tgl_masuk'])) ?></td>
             <td style="white-space:nowrap">
                 <span class="badge <?= $r['status'] === 'aktif' ? 'badge-ok' : 'badge-warn' ?>"><?= e($r['status']) ?></span>
                 <form method="post" action="" style="display:inline;margin-left:6px" onsubmit="return confirm('Ubah status santri ini?')">
@@ -180,5 +199,45 @@ include __DIR__ . '/../../includes/header.php';
     </tbody>
 </table>
 </div>
+
+<?php if ($can_edit): ?>
+<!-- ======== Modal tambah santri ======== -->
+<div class="sn-modal" id="modalTambahSantri" role="dialog" aria-modal="true" aria-label="Tambah Santri">
+    <div class="sn-modal-box">
+        <div class="sn-modal-head">
+            <h3><i class="fas fa-user-plus" style="margin-right:8px;color:var(--brand-active)"></i>Tambah Santri</h3>
+            <button type="button" class="sn-modal-close" data-snmodal-close aria-label="Tutup"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="sn-modal-body">
+            <form method="post" action="">
+                <div class="form-grid">
+                    <div class="field"><label>NIS</label><input type="text" name="nis" required maxlength="20"></div>
+                    <div class="field"><label>Nama Lengkap</label><input type="text" name="nama" required maxlength="100"></div>
+                    <div class="field"><label>Jenis Kelamin</label>
+                        <select name="jenis_kelamin"><option value="L">Laki-laki</option><option value="P">Perempuan</option></select>
+                    </div>
+                    <div class="field"><label>Tempat Lahir</label><input type="text" name="tempat_lahir" maxlength="60"></div>
+                    <div class="field"><label>Tanggal Lahir</label><input type="date" name="tgl_lahir"></div>
+                    <div class="field"><label>No. HP</label><input type="text" name="no_hp" maxlength="20"></div>
+                    <div class="field"><label>Alamat</label><input type="text" name="alamat" maxlength="255"></div>
+                    <div class="field"><label>Tanggal Mendaftar</label><input type="date" name="tgl_masuk" value="<?= date('Y-m-d') ?>"></div>
+                    <div class="field"><label>Kamar</label>
+                        <select name="kamar_id">
+                            <option value="">-- Belum ditempatkan --</option>
+                            <?php foreach ($kamar_list as $k): ?>
+                                <option value="<?= (int) $k['id'] ?>"><?= e($k['kamar'] . ' / ' . $k['asrama']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions" style="margin-top:18px">
+                    <button type="button" class="btn btn-ghost" data-snmodal-close>Batal</button>
+                    <button type="submit" name="tambah" class="btn">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
 
 <?php include __DIR__ . '/../../includes/footer.php'; ?>

@@ -63,6 +63,14 @@ try { if (localStorage.getItem('santriDark') === '1') document.body.classList.ad
     <main class="main">
         <header class="topbar">
             <h1><?= e($title) ?></h1>
+            <div class="sn-search" id="snGlobalSearch">
+                <form method="get" action="<?= url('modules/santri/') ?>" role="search" autocomplete="off">
+                    <span class="sn-search-icon"><i class="fas fa-search"></i></span>
+                    <input type="text" name="q" id="snGlobalSearchInput" class="sn-search-input"
+                           placeholder="Cari santri (nama/NIS)..." autocomplete="off" aria-label="Cari santri">
+                </form>
+                <div class="sn-search-results" id="snGlobalSearchResults"></div>
+            </div>
             <div class="topbar-widgets">
                 <div class="topbar-date"><?= e(tgl_indo(date('Y-m-d'))) ?></div>
                 <div class="tb-clock" title="Waktu sekarang (WIB)"><i class="fas fa-clock"></i><span id="tbClockTime">--:--</span></div>

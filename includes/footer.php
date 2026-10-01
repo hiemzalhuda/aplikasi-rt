@@ -172,6 +172,67 @@
         setTimeout(function () { location.href = url.href; }, LEAVE_MS);
     });
 })();
+/* ================= MODAL POPUP GENERIK (FINO) ================= */
+(function () {
+    function openModal(m) { if (m) { m.classList.add('open'); document.body.style.overflow = 'hidden'; } }
+    function closeModal(m) { if (m) { m.classList.remove('open'); document.body.style.overflow = ''; } }
+    window.snOpenModal = openModal;
+    window.snCloseModal = closeModal;
+    document.addEventListener('click', function (e) {
+        var opener = e.target.closest('[data-snmodal-open]');
+        if (opener) { openModal(document.getElementById(opener.getAttribute('data-snmodal-open'))); return; }
+        var closer = e.target.closest('[data-snmodal-close]');
+        if (closer) { closeModal(closer.closest('.sn-modal')); return; }
+        var overlay = e.target.classList && e.target.classList.contains('sn-modal') ? e.target : null;
+        if (overlay) closeModal(overlay);
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') document.querySelectorAll('.sn-modal.open').forEach(closeModal);
+    });
+})();
+
+/* ================= AUTOCOMPLETE PENCARIAN SANTRI (HEADER) ================= */
+(function () {
+    var wrap = document.getElementById('snGlobalSearch');
+    var input = document.getElementById('snGlobalSearchInput');
+    var box = document.getElementById('snGlobalSearchResults');
+    if (!wrap || !input || !box) return;
+    var timer = null;
+    var profilBase = <?= json_encode(url('modules/santri/profil.php')) ?>;
+    var cariUrl = <?= json_encode(url('modules/santri/cari.php')) ?>;
+
+    function closeBox() { box.classList.remove('open'); box.innerHTML = ''; }
+    function esc(s) {
+        return String(s).replace(/[&<>"']/g, function (c) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+    }
+    function render(items) {
+        if (!items.length) {
+            box.innerHTML = '<div class="sr-empty">Santri tidak ditemukan. Tekan Enter untuk pencarian penuh.</div>';
+        } else {
+            box.innerHTML = items.map(function (it) {
+                return '<a href="' + profilBase + '?id=' + it.id + '" data-no-transition>' +
+                    '<div class="sr-nama">' + esc(it.nama) + '</div>' +
+                    '<div class="sr-nis">NIS: ' + esc(it.nis) + '</div></a>';
+            }).join('');
+        }
+        box.classList.add('open');
+    }
+    input.addEventListener('input', function () {
+        var q = input.value.trim();
+        clearTimeout(timer);
+        if (q.length < 2) { closeBox(); return; }
+        timer = setTimeout(function () {
+            fetch(cariUrl + '?q=' + encodeURIComponent(q), { headers: { 'Accept': 'application/json' } })
+                .then(function (r) { return r.ok ? r.json() : []; })
+                .then(render)
+                .catch(function () { closeBox(); });
+        }, 250);
+    });
+    input.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeBox(); });
+    document.addEventListener('click', function (e) { if (!wrap.contains(e.target)) closeBox(); });
+})();
 </script>
 </body>
 </html>
