@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS santri (
   alamat        TEXT NULL,
   foto          VARCHAR(255) NULL,
   no_hp         VARCHAR(20) NULL,
-  status        ENUM('aktif','alumni','keluar','cuti') NOT NULL DEFAULT 'aktif',
+  status        ENUM('aktif','nonaktif','alumni','keluar','cuti') NOT NULL DEFAULT 'aktif',
   tgl_masuk     DATE NULL,
   created_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   INDEX idx_santri_status (status),
