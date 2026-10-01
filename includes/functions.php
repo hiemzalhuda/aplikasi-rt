@@ -6,6 +6,8 @@
 /** Branding pondok pesantren */
 if (!defined('APP_NAME')) define('APP_NAME', 'Fath Darut Tafsir');
 if (!defined('APP_FULL')) define('APP_FULL', 'Pondok Pesantren Fath Darut Tafsir');
+/** Versi aplikasi (tampil di footer sidebar) */
+if (!defined('APP_VERSION')) define('APP_VERSION', '1.4.0');
 
 function e($s) {
     return htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8');
@@ -68,6 +70,17 @@ function db_exec($db, $sql, $types = '', $params = array()) {
     $aff = $ok ? $stmt->affected_rows : false;
     $stmt->close();
     return $aff;
+}
+
+/** Catat aktivitas user (dipanggil tiap halaman dimuat). */
+function sentuh_online($db, $uid) {
+    db_exec($db, 'UPDATE users SET last_seen = NOW() WHERE id = ?', 'i', array((int) $uid));
+}
+
+/** Jumlah user yg aktif dalam 5 menit terakhir. */
+function hitung_online($db) {
+    $r = db_one($db, "SELECT COUNT(*) AS n FROM users WHERE aktif = 1 AND last_seen >= NOW() - INTERVAL 5 MINUTE");
+    return $r ? (int) $r['n'] : 0;
 }
 
 function tgl_indo($date) {

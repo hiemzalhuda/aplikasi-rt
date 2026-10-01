@@ -127,6 +127,19 @@ a { color: var(--brand-hover); }
     font-size: 11px; font-weight: 700; letter-spacing: .08em;
     text-transform: uppercase; color: var(--text-soft); margin: 3px 0 12px;
 }
+/* ---------- Footer sidebar: versi aplikasi + user online ---------- */
+.side-foot {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 11px 18px; border-top: 1px solid var(--border);
+    font-size: 12px; font-weight: 600; color: var(--text-soft);
+}
+.side-ver .fas { margin-right: 5px; opacity: .7; }
+.side-online { display: inline-flex; align-items: center; gap: 7px; }
+.dot-online { width: 8px; height: 8px; border-radius: 50%; background: #35B44A; animation: pulse-dot 2s infinite; }
+@keyframes pulse-dot {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(53,180,74,.18); }
+    50% { box-shadow: 0 0 0 6px rgba(53,180,74,.05); }
+}
 
 /* ---------- Main / topbar ---------- */
 .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }

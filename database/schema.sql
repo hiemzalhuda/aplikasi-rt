@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS users (
   nama_lengkap  VARCHAR(100) NOT NULL,
   role          ENUM('admin','pengasuh','keuangan','wali') NOT NULL DEFAULT 'pengasuh',
   aktif         TINYINT(1) NOT NULL DEFAULT 1,
+  last_seen     TIMESTAMP NULL DEFAULT NULL,
   created_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 

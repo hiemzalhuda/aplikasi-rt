@@ -20,6 +20,12 @@ $u = current_user();
 if ($u && $u['role'] === 'admin') {
     $nav['users'] = array('Pengguna', 'modules/users/', 'fa-solid fa-user-gear');
 }
+/* Lacak user online: catat aktivitas + hitung yg aktif 5 mnt terakhir */
+$sn_online = 0;
+if ($u && isset($koneksi)) {
+    sentuh_online($koneksi, (int) $u['id']);
+    $sn_online = hitung_online($koneksi);
+}
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -58,6 +64,10 @@ try { if (localStorage.getItem('santriDark') === '1') document.body.classList.ad
             <div class="side-user-name"><?= e($u ? $u['nama'] : '-') ?></div>
             <div class="side-user-role"><?= e($u ? $u['role'] : '-') ?></div>
             <a href="<?= url('logout.php') ?>" class="btn btn-sm btn-ghost">Keluar</a>
+        </div>
+        <div class="side-foot">
+            <span class="side-ver"><i class="fas fa-code-branch"></i>v<?= e(APP_VERSION) ?></span>
+            <span class="side-online"><span class="dot-online"></span><?= (int) $sn_online ?> online</span>
         </div>
     </aside>
     <div class="sn-scrim" id="snScrim"></div>
