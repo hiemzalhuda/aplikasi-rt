@@ -63,7 +63,7 @@ include __DIR__ . '/../../includes/header.php';
 
 <div class="grid grid-2">
     <div class="form-card">
-        <h2 class="section-title" style="margin-top:0">Catat Pelanggaran</h2>
+        <h2 class="section-title" style="margin-top:0"><i class="fas fa-triangle-exclamation sec-ico"></i>Catat Pelanggaran</h2>
         <form method="post" action="">
             <div class="form-grid">
                 <div class="field"><label>Santri</label>
@@ -85,11 +85,11 @@ include __DIR__ . '/../../includes/header.php';
                 <div class="field"><label>Tanggal</label><input type="date" name="tanggal" value="<?= date('Y-m-d') ?>"></div>
                 <div class="field"><label>Sanksi / Pembinaan</label><input type="text" name="sanksi" maxlength="255"></div>
             </div>
-            <div class="form-actions"><button type="submit" name="catat" class="btn btn-danger">Catat</button></div>
+            <div class="form-actions"><button type="submit" name="catat" class="btn btn-danger"><i class="fas fa-pen"></i>Catat</button></div>
         </form>
     </div>
     <div class="form-card">
-        <h2 class="section-title" style="margin-top:0">Master Jenis Pelanggaran</h2>
+        <h2 class="section-title" style="margin-top:0"><i class="fas fa-list-check sec-ico"></i>Master Jenis Pelanggaran</h2>
         <form method="post" action="">
             <div class="form-grid">
                 <div class="field"><label>Nama Pelanggaran</label><input type="text" name="nama" required maxlength="100"></div>
@@ -102,12 +102,12 @@ include __DIR__ . '/../../includes/header.php';
                     </select>
                 </div>
             </div>
-            <div class="form-actions"><button type="submit" name="tambah_master" class="btn">Tambah</button></div>
+            <div class="form-actions"><button type="submit" name="tambah_master" class="btn"><i class="fas fa-plus"></i>Tambah</button></div>
         </form>
     </div>
 </div>
 
-<h2 class="section-title">Rekap Poin Tertinggi</h2>
+<h2 class="section-title"><i class="fas fa-trophy sec-ico"></i>Rekap Poin Tertinggi</h2>
 <div class="table-wrap">
 <table>
     <thead><tr><th>NIS</th><th>Nama</th><th>Jumlah Kasus</th><th>Total Poin</th></tr></thead>
@@ -126,7 +126,7 @@ include __DIR__ . '/../../includes/header.php';
 </table>
 </div>
 
-<h2 class="section-title">Catatan Terakhir</h2>
+<h2 class="section-title"><i class="fas fa-clock-rotate-left sec-ico"></i>Catatan Terakhir</h2>
 <div class="table-wrap">
 <table>
     <thead><tr><th>Tanggal</th><th>Santri</th><th>Pelanggaran</th><th>Poin</th><th>Sanksi</th><th>Status</th><th>Aksi</th></tr></thead>
@@ -145,7 +145,7 @@ include __DIR__ . '/../../includes/header.php';
                 <?php if ($c['status'] !== 'selesai'): ?>
                 <form method="post" action="">
                     <input type="hidden" name="id" value="<?= (int) $c['id'] ?>">
-                    <button type="submit" name="selesaikan" class="btn btn-sm">Selesaikan</button>
+                    <button type="submit" name="selesaikan" class="btn btn-sm"><i class="fas fa-check-double"></i>Selesaikan</button>
                 </form>
                 <?php else: ?>-<?php endif; ?>
             </td>

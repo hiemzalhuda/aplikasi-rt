@@ -122,7 +122,7 @@ include __DIR__ . '/../../includes/header.php';
 
 <?php if ($edit_row): ?>
 <div class="form-card">
-    <h2 class="section-title" style="margin-top:0">Edit Pengguna: <?= e($edit_row['username']) ?></h2>
+    <h2 class="section-title" style="margin-top:0"><i class="fas fa-user-pen sec-ico"></i>Edit Pengguna: <?= e($edit_row['username']) ?></h2>
     <form method="post" action="">
         <input type="hidden" name="aksi" value="simpan_edit">
         <input type="hidden" name="id" value="<?= (int) $edit_row['id'] ?>">
@@ -140,7 +140,7 @@ include __DIR__ . '/../../includes/header.php';
             </div>
         </div>
         <div class="form-actions">
-            <button type="submit" class="btn">Simpan</button>
+            <button type="submit" class="btn"><i class="fas fa-check"></i>Simpan</button>
             <a href="<?= url('modules/users/') ?>" class="btn btn-ghost">Batal</a>
         </div>
     </form>
@@ -149,7 +149,7 @@ include __DIR__ . '/../../includes/header.php';
 
 <?php if ($reset_row): ?>
 <div class="form-card">
-    <h2 class="section-title" style="margin-top:0">Reset Password: <?= e($reset_row['username']) ?> (<?= e($reset_row['nama_lengkap']) ?>)</h2>
+    <h2 class="section-title" style="margin-top:0"><i class="fas fa-key sec-ico"></i>Reset Password: <?= e($reset_row['username']) ?> (<?= e($reset_row['nama_lengkap']) ?>)</h2>
     <form method="post" action="">
         <input type="hidden" name="aksi" value="simpan_reset">
         <input type="hidden" name="id" value="<?= (int) $reset_row['id'] ?>">
@@ -157,7 +157,7 @@ include __DIR__ . '/../../includes/header.php';
             <div class="field"><label>Password Baru</label><input type="password" name="password_baru" required minlength="6" autocomplete="new-password"></div>
         </div>
         <div class="form-actions">
-            <button type="submit" class="btn btn-warn">Reset Password</button>
+            <button type="submit" class="btn btn-warn"><i class="fas fa-key"></i>Reset Password</button>
             <a href="<?= url('modules/users/') ?>" class="btn btn-ghost">Batal</a>
         </div>
     </form>
@@ -165,7 +165,7 @@ include __DIR__ . '/../../includes/header.php';
 <?php endif; ?>
 
 <div class="form-card">
-    <h2 class="section-title" style="margin-top:0">Tambah Pengguna</h2>
+    <h2 class="section-title" style="margin-top:0"><i class="fas fa-user-plus sec-ico"></i>Tambah Pengguna</h2>
     <form method="post" action="">
         <input type="hidden" name="aksi" value="tambah">
         <div class="form-grid">
@@ -181,7 +181,7 @@ include __DIR__ . '/../../includes/header.php';
             </div>
             <div class="field"><label>&nbsp;</label><label style="font-weight:normal"><input type="checkbox" name="aktif" value="1" checked> Akun aktif</label></div>
         </div>
-        <div class="form-actions"><button type="submit" class="btn">Tambah</button></div>
+        <div class="form-actions"><button type="submit" class="btn"><i class="fas fa-plus"></i>Tambah</button></div>
     </form>
     <p style="color:#777;font-size:13px;margin:8px 0 0">Catatan: akun role "Wali" untuk portal wali nantinya dihubungkan ke data santri lewat tabel <code>wali_akun</code> (roadmap).</p>
 </div>
@@ -205,7 +205,7 @@ include __DIR__ . '/../../includes/header.php';
                 <form method="post" action="" style="display:inline" onsubmit="return confirm('Hapus pengguna <?= e($r['username']) ?>?')">
                     <input type="hidden" name="aksi" value="hapus">
                     <input type="hidden" name="id" value="<?= (int) $r['id'] ?>">
-                    <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
+                    <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i>Hapus</button>
                 </form>
             </td>
         </tr>

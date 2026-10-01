@@ -240,8 +240,8 @@ include __DIR__ . '/../../includes/header.php';
                     </div>
                 </div>
                 <div class="form-actions" style="margin-top:18px">
-                    <button type="button" class="btn btn-ghost" data-snmodal-close>Batal</button>
-                    <button type="submit" name="tambah" class="btn">Simpan</button>
+                    <button type="button" class="btn btn-ghost" data-snmodal-close><i class="fas fa-xmark"></i>Batal</button>
+                    <button type="submit" name="tambah" class="btn"><i class="fas fa-check"></i>Simpan</button>
                 </div>
             </form>
         </div>

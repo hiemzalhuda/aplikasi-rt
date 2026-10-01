@@ -63,7 +63,7 @@ include __DIR__ . '/../../includes/header.php';
 
 <div class="grid grid-2">
     <div class="form-card">
-        <h2 class="section-title" style="margin-top:0">Catat Setoran</h2>
+        <h2 class="section-title" style="margin-top:0"><i class="fas fa-book-quran sec-ico"></i>Catat Setoran</h2>
         <form method="post" action="">
             <div class="form-grid">
                 <div class="field"><label>Santri</label>
@@ -89,11 +89,11 @@ include __DIR__ . '/../../includes/header.php';
                 <div class="field"><label>Nilai (0-100)</label><input type="number" name="nilai" min="0" max="100"></div>
                 <div class="field"><label>Penyimak</label><input type="text" name="penyimak" maxlength="100"></div>
             </div>
-            <div class="form-actions"><button type="submit" name="tambah_setoran" class="btn">Simpan</button></div>
+            <div class="form-actions"><button type="submit" name="tambah_setoran" class="btn"><i class="fas fa-check"></i>Simpan</button></div>
         </form>
     </div>
     <div class="form-card">
-        <h2 class="section-title" style="margin-top:0">Target Hafalan Santri</h2>
+        <h2 class="section-title" style="margin-top:0"><i class="fas fa-bullseye sec-ico"></i>Target Hafalan Santri</h2>
         <form method="post" action="">
             <div class="form-grid">
                 <div class="field"><label>Santri</label>
@@ -107,12 +107,12 @@ include __DIR__ . '/../../includes/header.php';
                 <div class="field"><label>Target (juz)</label><input type="number" name="target_juz" step="0.5" min="0" max="30" value="1"></div>
                 <div class="field"><label>Periode</label><input type="text" name="periode" maxlength="20" placeholder="cth: 2026/2027"></div>
             </div>
-            <div class="form-actions"><button type="submit" name="simpan_target" class="btn">Simpan Target</button></div>
+            <div class="form-actions"><button type="submit" name="simpan_target" class="btn"><i class="fas fa-check"></i>Simpan Target</button></div>
         </form>
     </div>
 </div>
 
-<h2 class="section-title">Setoran Terakhir</h2>
+<h2 class="section-title"><i class="fas fa-clock-rotate-left sec-ico"></i>Setoran Terakhir</h2>
 <div class="table-wrap">
 <table>
     <thead><tr><th>Tanggal</th><th>Santri</th><th>Jenis</th><th>Materi</th><th>Nilai</th><th>Penyimak</th></tr></thead>
@@ -138,7 +138,7 @@ include __DIR__ . '/../../includes/header.php';
 </table>
 </div>
 
-<h2 class="section-title">Progres Hafalan</h2>
+<h2 class="section-title"><i class="fas fa-chart-line sec-ico"></i>Progres Hafalan</h2>
 <div class="table-wrap">
 <table>
     <thead><tr><th>NIS</th><th>Nama</th><th>Juz Disetor</th><th>Target</th></tr></thead>

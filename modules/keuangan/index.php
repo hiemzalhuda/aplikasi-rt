@@ -90,17 +90,17 @@ include __DIR__ . '/../../includes/header.php';
 
 <div class="grid grid-2">
     <div class="form-card">
-        <h2 class="section-title" style="margin-top:0">Tagihan SPP Massal</h2>
+        <h2 class="section-title" style="margin-top:0"><i class="fas fa-file-invoice sec-ico"></i>Tagihan SPP Massal</h2>
         <form method="post" action="">
             <div class="form-grid">
                 <div class="field"><label>Bulan (YYYY-MM)</label><input type="month" name="bulan" value="<?= date('Y-m') ?>" required></div>
                 <div class="field"><label>Nominal (Rp)</label><input type="number" name="nominal" min="1" required></div>
             </div>
-            <div class="form-actions"><button type="submit" name="generate_tagihan" class="btn">Generate ke Semua Santri Aktif</button></div>
+            <div class="form-actions"><button type="submit" name="generate_tagihan" class="btn"><i class="fas fa-users"></i>Generate ke Semua Santri Aktif</button></div>
         </form>
     </div>
     <div class="form-card">
-        <h2 class="section-title" style="margin-top:0">Mutasi Tabungan / Uang Saku</h2>
+        <h2 class="section-title" style="margin-top:0"><i class="fas fa-money-bill-transfer sec-ico"></i>Mutasi Tabungan / Uang Saku</h2>
         <form method="post" action="">
             <div class="form-grid">
                 <div class="field"><label>Santri</label>
@@ -117,12 +117,12 @@ include __DIR__ . '/../../includes/header.php';
                 <div class="field"><label>Jumlah (Rp)</label><input type="number" name="jumlah" min="1" required></div>
                 <div class="field"><label>Keterangan</label><input type="text" name="keterangan" maxlength="120"></div>
             </div>
-            <div class="form-actions"><button type="submit" name="mutasi_tabungan" class="btn">Catat</button></div>
+            <div class="form-actions"><button type="submit" name="mutasi_tabungan" class="btn"><i class="fas fa-pen"></i>Catat</button></div>
         </form>
     </div>
 </div>
 
-<h2 class="section-title">Tagihan SPP</h2>
+<h2 class="section-title"><i class="fas fa-file-invoice-dollar sec-ico"></i>Tagihan SPP</h2>
 <div class="table-wrap">
 <table>
     <thead><tr><th>Bulan</th><th>Santri</th><th>Nominal</th><th>Terbayar</th><th>Sisa</th><th>Status</th><th>Bayar</th></tr></thead>
@@ -154,7 +154,7 @@ include __DIR__ . '/../../includes/header.php';
 </table>
 </div>
 
-<h2 class="section-title">Saldo Tabungan Santri</h2>
+<h2 class="section-title"><i class="fas fa-piggy-bank sec-ico"></i>Saldo Tabungan Santri</h2>
 <div class="table-wrap">
 <table>
     <thead><tr><th>NIS</th><th>Nama</th><th>Saldo</th></tr></thead>
@@ -172,7 +172,7 @@ include __DIR__ . '/../../includes/header.php';
 </table>
 </div>
 
-<h2 class="section-title">Mutasi Terakhir</h2>
+<h2 class="section-title"><i class="fas fa-clock-rotate-left sec-ico"></i>Mutasi Terakhir</h2>
 <div class="table-wrap">
 <table>
     <thead><tr><th>Waktu</th><th>Santri</th><th>Jenis</th><th>Jumlah</th><th>Keterangan</th></tr></thead>

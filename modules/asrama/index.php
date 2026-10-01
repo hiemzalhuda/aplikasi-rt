@@ -60,7 +60,7 @@ include __DIR__ . '/../../includes/header.php';
 
 <div class="grid grid-2">
     <div class="form-card">
-        <h2 class="section-title" style="margin-top:0">Tambah Asrama</h2>
+        <h2 class="section-title" style="margin-top:0"><i class="fas fa-building sec-ico"></i>Tambah Asrama</h2>
         <form method="post" action="">
             <div class="form-grid">
                 <div class="field"><label>Nama Asrama</label><input type="text" name="nama" required maxlength="60"></div>
@@ -68,11 +68,11 @@ include __DIR__ . '/../../includes/header.php';
                     <select name="jenis"><option value="putra">Putra</option><option value="putri">Putri</option></select>
                 </div>
             </div>
-            <div class="form-actions"><button type="submit" name="tambah_asrama" class="btn">Simpan</button></div>
+            <div class="form-actions"><button type="submit" name="tambah_asrama" class="btn"><i class="fas fa-check"></i>Simpan</button></div>
         </form>
     </div>
     <div class="form-card">
-        <h2 class="section-title" style="margin-top:0">Tambah Kamar</h2>
+        <h2 class="section-title" style="margin-top:0"><i class="fas fa-bed sec-ico"></i>Tambah Kamar</h2>
         <form method="post" action="">
             <div class="form-grid">
                 <div class="field"><label>Asrama</label>
@@ -86,13 +86,13 @@ include __DIR__ . '/../../includes/header.php';
                 <div class="field"><label>Nama Kamar</label><input type="text" name="nama" required maxlength="30"></div>
                 <div class="field"><label>Kapasitas</label><input type="number" name="kapasitas" value="4" min="1" max="40"></div>
             </div>
-            <div class="form-actions"><button type="submit" name="tambah_kamar" class="btn">Simpan</button></div>
+            <div class="form-actions"><button type="submit" name="tambah_kamar" class="btn"><i class="fas fa-check"></i>Simpan</button></div>
         </form>
     </div>
 </div>
 
 <div class="form-card">
-    <h2 class="section-title" style="margin-top:0">Tempatkan Santri</h2>
+    <h2 class="section-title" style="margin-top:0"><i class="fas fa-user-check sec-ico"></i>Tempatkan Santri</h2>
     <form method="post" action="">
         <div class="form-grid">
             <div class="field"><label>Santri</label>
@@ -112,11 +112,11 @@ include __DIR__ . '/../../includes/header.php';
                 </select>
             </div>
         </div>
-        <div class="form-actions"><button type="submit" name="tempatkan" class="btn">Tempatkan</button></div>
+        <div class="form-actions"><button type="submit" name="tempatkan" class="btn"><i class="fas fa-user-check"></i>Tempatkan</button></div>
     </form>
 </div>
 
-<h2 class="section-title">Daftar Kamar</h2>
+<h2 class="section-title"><i class="fas fa-list sec-ico"></i>Daftar Kamar</h2>
 <div class="table-wrap">
 <table>
     <thead><tr><th>Asrama</th><th>Kamar</th><th>Kapasitas</th><th>Terisi</th></tr></thead>
@@ -135,7 +135,7 @@ include __DIR__ . '/../../includes/header.php';
 </table>
 </div>
 
-<h2 class="section-title">Penghuni Aktif</h2>
+<h2 class="section-title"><i class="fas fa-users sec-ico"></i>Penghuni Aktif</h2>
 <div class="table-wrap">
 <table>
     <thead><tr><th>NIS</th><th>Nama</th><th>Asrama</th><th>Kamar</th></tr></thead>

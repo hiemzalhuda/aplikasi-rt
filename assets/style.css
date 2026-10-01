@@ -183,6 +183,13 @@ a { color: var(--brand-hover); }
 .section-title { font-weight: 800; font-size: 18px; letter-spacing: -.01em; margin: 28px 0 14px; color: var(--text); display: flex; align-items: center; gap: 10px; }
 .section-title::before { content: ""; width: 8px; height: 22px; border-radius: 4px; background: linear-gradient(180deg, var(--brand), var(--brand-hover)); }
 
+/* ---------- Ikon judul section, kartu, dan tombol ---------- */
+.sec-ico { color: var(--brand-hover); font-size: .92em; }
+.section-title:has(.sec-ico)::before { display: none; }
+.card-ico { color: var(--brand-hover); margin-right: 9px; font-size: .92em; }
+.btn .fas, .btn .fa-solid, .btn .far { margin-right: 7px; }
+.btn-sm .fas, .btn-sm .fa-solid { margin-right: 5px; }
+
 /* ---------- Tabel ---------- */
 .table-wrap {
     overflow-x: auto; background: var(--card);

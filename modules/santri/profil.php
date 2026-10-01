@@ -246,7 +246,7 @@ include __DIR__ . '/../../includes/header.php';
                 <td>
                     <form method="post" action="" style="display:inline" onsubmit="return confirm('Hapus prestasi ini?')">
                         <input type="hidden" name="prestasi_id" value="<?= (int) $p['id'] ?>">
-                        <button type="submit" name="hapus_prestasi" class="btn btn-sm btn-danger">Hapus</button>
+                        <button type="submit" name="hapus_prestasi" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i>Hapus</button>
                     </form>
                 </td>
                 <?php endif; ?>
@@ -270,7 +270,7 @@ include __DIR__ . '/../../includes/header.php';
             <div class="field"><label>Tanggal</label><input type="date" name="tanggal" value="<?= date('Y-m-d') ?>"></div>
             <div class="field"><label>Keterangan</label><input type="text" name="keterangan" maxlength="255"></div>
         </div>
-        <div class="form-actions"><button type="submit" name="tambah_prestasi" class="btn">Tambah</button></div>
+        <div class="form-actions"><button type="submit" name="tambah_prestasi" class="btn"><i class="fas fa-plus"></i>Tambah</button></div>
     </form>
     <?php endif; ?>
 </div>
@@ -302,7 +302,7 @@ include __DIR__ . '/../../includes/header.php';
                     <div class="field"><label>Foto (jpg/png/webp, maks 2MB)</label><input type="file" name="foto" accept="image/jpeg,image/png,image/webp"></div>
                 </div>
                 <div class="form-actions" style="margin-top:18px">
-                    <button type="button" class="btn btn-ghost" data-snmodal-close>Batal</button>
+                    <button type="button" class="btn btn-ghost" data-snmodal-close><i class="fas fa-xmark"></i>Batal</button>
                     <button type="submit" name="simpan_profil" class="btn">Simpan Perubahan</button>
                 </div>
             </form>

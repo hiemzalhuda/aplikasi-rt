@@ -126,7 +126,7 @@ include __DIR__ . '/../../includes/header.php';
 ?>
 
 <div class="form-card">
-    <h2 class="section-title" style="margin-top:0">Buat Sesi Kehadiran</h2>
+    <h2 class="section-title" style="margin-top:0"><i class="fas fa-calendar-plus sec-ico"></i>Buat Sesi Kehadiran</h2>
     <form method="post" action="">
         <div class="form-grid">
             <div class="field"><label>Tanggal</label><input type="date" name="tanggal" value="<?= date('Y-m-d') ?>"></div>
@@ -153,7 +153,7 @@ include __DIR__ . '/../../includes/header.php';
                 </select>
             </div>
         </div>
-        <div class="form-actions"><button type="submit" name="buat_sesi" class="btn">Buat Sesi</button></div>
+        <div class="form-actions"><button type="submit" name="buat_sesi" class="btn"><i class="fas fa-calendar-plus"></i>Buat Sesi</button></div>
     </form>
 </div>
 <script>
@@ -172,7 +172,7 @@ include __DIR__ . '/../../includes/header.php';
 
 <?php if ($sesi_aktif): ?>
 <div class="form-card">
-    <h2 class="section-title" style="margin-top:0">
+    <h2 class="section-title" style="margin-top:0"><i class="fas fa-clipboard-check sec-ico"></i>
         Absensi: <?= e(label_sesi($sesi_aktif['jenis'], $sesi_aktif['kelas'] ?? null)) ?> —
         <?= e(tgl_indo($sesi_aktif['tanggal'])) ?>
         <span class="badge badge-ok"><?= e($sesi_aktif['kode']) ?></span>
@@ -199,12 +199,12 @@ include __DIR__ . '/../../includes/header.php';
             </tbody>
         </table>
         </div>
-        <div class="form-actions"><button type="submit" name="simpan_absen" class="btn">Simpan Absensi</button></div>
+        <div class="form-actions"><button type="submit" name="simpan_absen" class="btn"><i class="fas fa-check"></i>Simpan Absensi</button></div>
     </form>
 </div>
 <?php endif; ?>
 
-<h2 class="section-title">Sesi Terakhir</h2>
+<h2 class="section-title"><i class="fas fa-clock-rotate-left sec-ico"></i>Sesi Terakhir</h2>
 <div style="margin-bottom:12px; display:flex; gap:8px; flex-wrap:wrap">
     <a class="btn btn-sm<?= $f_kategori === '' ? '' : ' btn-ghost' ?>" href="<?= url('modules/kehadiran/') ?>">Semua</a>
     <?php foreach (array_keys($kategori_jenis) as $kat): ?>

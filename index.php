@@ -242,8 +242,8 @@ include __DIR__ . '/includes/header.php';
         <p class="fh-date"><?= e($tgl_indo_full) ?></p>
     </div>
     <div class="fh-actions">
-        <a href="<?= url('modules/santri/') ?>" class="fh-btn fh-btn-filled">+ Tambah Santri</a>
-        <a href="<?= url('modules/kehadiran/') ?>" class="fh-btn fh-btn-tonal">Absensi Hari Ini</a>
+        <a href="<?= url('modules/santri/') ?>" class="fh-btn fh-btn-filled"><i class="fas fa-user-plus"></i>Tambah Santri</a>
+        <a href="<?= url('modules/kehadiran/') ?>" class="fh-btn fh-btn-tonal"><i class="fas fa-clipboard-check"></i>Absensi Hari Ini</a>
     </div>
 </div>
 
@@ -251,7 +251,7 @@ include __DIR__ . '/includes/header.php';
 <div class="grid grid-4">
     <div class="card fh-reveal" style="--i:1">
         <div class="fh-stat">
-            <div class="fh-ic g1">&#9679;</div>
+            <div class="fh-ic g1"><i class="fas fa-users"></i></div>
             <div class="fh-stat-body">
                 <h3>Total Santri Aktif</h3>
                 <div class="stat-num" data-count="<?= $total_santri ?>">0</div>
@@ -261,7 +261,7 @@ include __DIR__ . '/includes/header.php';
     </div>
     <div class="card fh-reveal" style="--i:2">
         <div class="fh-stat">
-            <div class="fh-ic g2">&#9679;</div>
+            <div class="fh-ic g2"><i class="fas fa-clipboard-check"></i></div>
             <div class="fh-stat-body">
                 <h3>Kehadiran Hari Ini</h3>
                 <div class="stat-num" data-count="<?= $hadir_hari_ini ?>">0</div>
@@ -271,7 +271,7 @@ include __DIR__ . '/includes/header.php';
     </div>
     <div class="card fh-reveal" style="--i:3">
         <div class="fh-stat">
-            <div class="fh-ic g3">&#9679;</div>
+            <div class="fh-ic g3"><i class="fas fa-book-quran"></i></div>
             <div class="fh-stat-body">
                 <h3>Setoran Hafalan Hari Ini</h3>
                 <div class="stat-num" data-count="<?= $setoran_hari_ini ?>">0</div>
@@ -281,7 +281,7 @@ include __DIR__ . '/includes/header.php';
     </div>
     <div class="card fh-reveal" style="--i:4">
         <div class="fh-stat">
-            <div class="fh-ic g4">&#9679;</div>
+            <div class="fh-ic g4"><i class="fas fa-wallet"></i></div>
             <div class="fh-stat-body">
                 <h3>Tunggakan SPP</h3>
                 <div class="stat-num" data-count="<?= $tunggakan_c ?>">0</div>
@@ -292,10 +292,10 @@ include __DIR__ . '/includes/header.php';
 </div>
 
 <!-- ==================== GRAFIK ==================== -->
-<h2 class="section-title fh-reveal" style="--i:5">Grafik</h2>
+<h2 class="section-title fh-reveal" style="--i:5"><i class="fas fa-chart-column sec-ico"></i>Grafik</h2>
 <div class="grid grid-2">
     <div class="card fh-reveal" style="--i:6">
-        <h3>Aktivitas 7 Hari Terakhir</h3>
+        <h3><i class="fas fa-chart-line card-ico"></i>Aktivitas 7 Hari Terakhir</h3>
         <div class="fh-chart"><canvas id="chAktivitas"></canvas></div>
         <div class="fh-chart-legend">
             <span><span class="fh-dot" style="background:#75BF43"></span>Kehadiran</span>
@@ -303,7 +303,7 @@ include __DIR__ . '/includes/header.php';
         </div>
     </div>
     <div class="card fh-reveal" style="--i:7">
-        <h3>Komposisi Santri per Asrama</h3>
+        <h3><i class="fas fa-chart-pie card-ico"></i>Komposisi Santri per Asrama</h3>
         <?php if ($asrama_kosong): ?>
             <div class="empty">Belum ada data penempatan asrama.</div>
         <?php else: ?>
@@ -313,24 +313,24 @@ include __DIR__ . '/includes/header.php';
 </div>
 
 <!-- ==================== RINGKASAN ==================== -->
-<h2 class="section-title fh-reveal" style="--i:8">Ringkasan</h2>
+<h2 class="section-title fh-reveal" style="--i:8"><i class="fas fa-clipboard-list sec-ico"></i>Ringkasan</h2>
 <div class="grid grid-2">
     <div class="card fh-reveal" style="--i:9">
-        <h3>Pelanggaran Bulan Ini</h3>
+        <h3><i class="fas fa-triangle-exclamation card-ico"></i>Pelanggaran Bulan Ini</h3>
         <div class="stat-num" data-count="<?= $pelanggaran_bulan ?>">0</div>
         <div class="stat-sub">catatan pelanggaran tercatat</div>
     </div>
     <div class="card fh-reveal" style="--i:10">
-        <h3>Aksi Cepat</h3>
+        <h3><i class="fas fa-bolt card-ico"></i>Aksi Cepat</h3>
         <div class="fh-quick">
-            <a href="<?= url('modules/santri/') ?>"><span class="q-ic">+</span>Santri<span>Kelola data santri</span></a>
-            <a href="<?= url('modules/kehadiran/') ?>"><span class="q-ic">&#10003;</span>Kehadiran<span>Absensi harian</span></a>
-            <a href="<?= url('modules/hafalan/') ?>"><span class="q-ic">&#9733;</span>Hafalan<span>Setoran &amp; target</span></a>
-            <a href="<?= url('modules/keuangan/') ?>"><span class="q-ic">Rp</span>Keuangan<span>SPP &amp; tabungan</span></a>
+            <a href="<?= url('modules/santri/') ?>"><span class="q-ic"><i class="fas fa-users"></i></span>Santri<span>Kelola data santri</span></a>
+            <a href="<?= url('modules/kehadiran/') ?>"><span class="q-ic"><i class="fas fa-clipboard-check"></i></span>Kehadiran<span>Absensi harian</span></a>
+            <a href="<?= url('modules/hafalan/') ?>"><span class="q-ic"><i class="fas fa-book-quran"></i></span>Hafalan<span>Setoran &amp; target</span></a>
+            <a href="<?= url('modules/keuangan/') ?>"><span class="q-ic"><i class="fas fa-wallet"></i></span>Keuangan<span>SPP &amp; tabungan</span></a>
         </div>
     </div>
     <div class="card fh-reveal" style="--i:11">
-        <h3>Santri Terbaru</h3>
+        <h3><i class="fas fa-user-plus card-ico"></i>Santri Terbaru</h3>
         <div class="stat-num" data-count="<?= $santri_baru_bulan ?>">0</div>
         <div class="stat-sub">santri baru bulan ini</div>
         <?php if ($santri_terbaru): ?>

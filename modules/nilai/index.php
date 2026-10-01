@@ -100,7 +100,7 @@ include __DIR__ . '/../../includes/header.php';
 
 <div class="grid grid-2">
     <div class="form-card">
-        <h2 class="section-title" style="margin-top:0">Catat Nilai</h2>
+        <h2 class="section-title" style="margin-top:0"><i class="fas fa-pen sec-ico"></i>Catat Nilai</h2>
         <form method="post" action="">
             <div class="form-grid">
                 <div class="field"><label>Santri</label>
@@ -153,11 +153,11 @@ include __DIR__ . '/../../includes/header.php';
                     <input type="text" name="keterangan" maxlength="255" placeholder="cth: Bab pecahan">
                 </div>
             </div>
-            <div class="form-actions"><button type="submit" name="tambah_nilai" class="btn">Simpan Nilai</button></div>
+            <div class="form-actions"><button type="submit" name="tambah_nilai" class="btn"><i class="fas fa-check"></i>Simpan Nilai</button></div>
         </form>
     </div>
     <div class="form-card">
-        <h2 class="section-title" style="margin-top:0">Filter</h2>
+        <h2 class="section-title" style="margin-top:0"><i class="fas fa-filter sec-ico"></i>Filter</h2>
         <form method="get" action="">
             <div class="form-grid">
                 <div class="field"><label>Santri</label>
@@ -204,14 +204,14 @@ include __DIR__ . '/../../includes/header.php';
                 </div>
             </div>
             <div class="form-actions">
-                <button type="submit" class="btn">Terapkan</button>
+                <button type="submit" class="btn"><i class="fas fa-filter"></i>Terapkan</button>
                 <a href="<?= url('modules/nilai/') ?>" class="btn btn-ghost">Atur Ulang</a>
             </div>
         </form>
     </div>
 </div>
 
-<h2 class="section-title">Rekap Rata-rata<?= $f_ta !== '' ? ' — ' . e($f_ta) : '' ?><?= $f_semester > 0 ? ' · Semester ' . $f_semester : '' ?><?= $f_kelas > 0 ? ' · Kelas ' . $f_kelas : '' ?></h2>
+<h2 class="section-title"><i class="fas fa-chart-column sec-ico"></i>Rekap Rata-rata<?= $f_ta !== '' ? ' — ' . e($f_ta) : '' ?><?= $f_semester > 0 ? ' · Semester ' . $f_semester : '' ?><?= $f_kelas > 0 ? ' · Kelas ' . $f_kelas : '' ?></h2>
 <div class="table-wrap">
 <table>
     <thead><tr><th>NIS</th><th>Nama</th><th>Kelas</th><th>Jml Penilaian</th><th>Rata-rata</th><th>Predikat</th></tr></thead>
@@ -234,7 +234,7 @@ include __DIR__ . '/../../includes/header.php';
 </table>
 </div>
 
-<h2 class="section-title">Riwayat Nilai</h2>
+<h2 class="section-title"><i class="fas fa-clock-rotate-left sec-ico"></i>Riwayat Nilai</h2>
 <div class="table-wrap">
 <table>
     <thead><tr><th>Tanggal</th><th>Santri</th><th>Mapel</th><th>Jenis</th><th>Nilai</th><th>Kelas</th><th>Sem./TA</th><th>Aksi</th></tr></thead>
@@ -253,7 +253,7 @@ include __DIR__ . '/../../includes/header.php';
             <td>
                 <form method="post" action="" style="display:inline" onsubmit="return confirm('Hapus nilai <?= e($r['mapel']) ?> (<?= e($r['nama']) ?>)?')">
                     <input type="hidden" name="id" value="<?= (int) $r['id'] ?>">
-                    <button type="submit" name="hapus_nilai" class="btn btn-sm btn-danger">Hapus</button>
+                    <button type="submit" name="hapus_nilai" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i>Hapus</button>
                 </form>
             </td>
         </tr>
