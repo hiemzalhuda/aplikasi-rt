@@ -77,7 +77,7 @@ $tagihan = db_all($koneksi,
      FROM tagihan_spp t JOIN santri s ON s.id = t.santri_id
      ORDER BY t.bulan DESC, s.nama ASC LIMIT 100');
 $saldo = db_all($koneksi,
-    "SELECT s.nis, s.nama,
+    "SELECT s.id AS sid, s.nis, s.nama,
         COALESCE(SUM(CASE WHEN tb.jenis='masuk' THEN tb.jumlah ELSE -tb.jumlah END),0) AS saldo
      FROM santri s LEFT JOIN tabungan tb ON tb.santri_id = s.id
      WHERE s.status = 'aktif' GROUP BY s.id ORDER BY s.nama LIMIT 100");
@@ -134,7 +134,7 @@ include __DIR__ . '/../../includes/header.php';
     ?>
         <tr>
             <td><?= e($t['bulan']) ?></td>
-            <td><?= e($t['nama']) ?></td>
+            <td><?= profil_link($t['santri_id'], $t['nama']) ?></td>
             <td><?= e(rupiah($t['nominal'])) ?></td>
             <td><?= e(rupiah($t['terbayar'])) ?></td>
             <td><?= e(rupiah($sisa)) ?></td>
@@ -163,8 +163,8 @@ include __DIR__ . '/../../includes/header.php';
         <tr><td colspan="3" class="empty">Belum ada data.</td></tr>
     <?php else: foreach ($saldo as $s): ?>
         <tr>
-            <td><?= e($s['nis']) ?></td>
-            <td><?= e($s['nama']) ?></td>
+            <td><?= profil_link($s['sid'], $s['nis']) ?></td>
+            <td><?= profil_link($s['sid'], $s['nama']) ?></td>
             <td><strong><?= e(rupiah($s['saldo'])) ?></strong></td>
         </tr>
     <?php endforeach; endif; ?>
@@ -182,7 +182,7 @@ include __DIR__ . '/../../includes/header.php';
     <?php else: foreach ($mutasi as $m): ?>
         <tr>
             <td><?= e($m['tanggal']) ?></td>
-            <td><?= e($m['nama']) ?></td>
+            <td><?= profil_link($m['santri_id'], $m['nama']) ?></td>
             <td><span class="badge <?= $m['jenis'] === 'masuk' ? 'badge-ok' : 'badge-warn' ?>"><?= e($m['jenis']) ?></span></td>
             <td><?= e(rupiah($m['jumlah'])) ?></td>
             <td><?= e($m['keterangan'] ?: '-') ?></td>

@@ -51,7 +51,7 @@ $catatan = db_all($koneksi,
      JOIN master_pelanggaran mp ON mp.id = cp.pelanggaran_id
      ORDER BY cp.tanggal DESC, cp.id DESC LIMIT 50');
 $rekap = db_all($koneksi,
-    "SELECT s.nis, s.nama, COALESCE(SUM(mp.poin),0) AS total_poin, COUNT(cp.id) AS jml
+    "SELECT s.id AS sid, s.nis, s.nama, COALESCE(SUM(mp.poin),0) AS total_poin, COUNT(cp.id) AS jml
      FROM santri s
      LEFT JOIN catatan_pelanggaran cp ON cp.santri_id = s.id
      LEFT JOIN master_pelanggaran mp ON mp.id = cp.pelanggaran_id
@@ -116,8 +116,8 @@ include __DIR__ . '/../../includes/header.php';
         <tr><td colspan="4" class="empty">Belum ada pelanggaran tercatat.</td></tr>
     <?php else: foreach ($rekap as $r): ?>
         <tr>
-            <td><?= e($r['nis']) ?></td>
-            <td><?= e($r['nama']) ?></td>
+            <td><?= profil_link($r['sid'], $r['nis']) ?></td>
+            <td><?= profil_link($r['sid'], $r['nama']) ?></td>
             <td><?= (int) $r['jml'] ?></td>
             <td><span class="badge <?= (int) $r['total_poin'] >= 100 ? 'badge-err' : 'badge-warn' ?>"><?= (int) $r['total_poin'] ?></span></td>
         </tr>
@@ -136,7 +136,7 @@ include __DIR__ . '/../../includes/header.php';
     <?php else: foreach ($catatan as $c): ?>
         <tr>
             <td><?= e(tgl_indo($c['tanggal'])) ?></td>
-            <td><?= e($c['santri']) ?></td>
+            <td><?= profil_link($c['santri_id'], $c['santri']) ?></td>
             <td><?= e($c['pelanggaran']) ?></td>
             <td><?= (int) $c['poin'] ?></td>
             <td><?= e($c['sanksi'] ?: '-') ?></td>

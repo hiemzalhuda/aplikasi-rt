@@ -192,6 +192,25 @@ CREATE TABLE IF NOT EXISTS nilai (
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
+-- 4c. Prestasi santri
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS prestasi (
+  id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  santri_id   INT UNSIGNED NOT NULL,
+  judul       VARCHAR(100) NOT NULL,
+  tingkat     VARCHAR(40) NULL COMMENT 'mis. Pondok, Kecamatan, Kabupaten, Provinsi, Nasional',
+  tanggal     DATE NULL,
+  keterangan  VARCHAR(255) NULL,
+  created_by  INT UNSIGNED NULL,
+  created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_prestasi_santri FOREIGN KEY (santri_id)
+    REFERENCES santri (id) ON DELETE CASCADE,
+  CONSTRAINT fk_prestasi_user FOREIGN KEY (created_by)
+    REFERENCES users (id) ON DELETE SET NULL,
+  INDEX idx_prestasi_santri (santri_id)
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------
 -- 5. Keuangan (SPP + tabungan)
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS tagihan_spp (

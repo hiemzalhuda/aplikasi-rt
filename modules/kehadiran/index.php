@@ -185,8 +185,8 @@ include __DIR__ . '/../../includes/header.php';
             <tbody>
             <?php foreach ($santri_absen as $s): ?>
                 <tr>
-                    <td><?= e($s['nis']) ?></td>
-                    <td><?= e($s['nama']) ?></td>
+                    <td><?= profil_link($s['id'], $s['nis']) ?></td>
+                    <td><?= profil_link($s['id'], $s['nama']) ?></td>
                     <td>
                         <select name="status[<?= (int) $s['id'] ?>]">
                             <?php foreach (array('hadir','izin','sakit','alpa') as $st): ?>

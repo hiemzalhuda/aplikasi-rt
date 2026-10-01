@@ -59,6 +59,14 @@ $pelanggaran_bulan = db_one($koneksi,
     "SELECT COUNT(*) AS c FROM catatan_pelanggaran WHERE DATE_FORMAT(tanggal,'%Y-%m') = ?", 's', array($bulan_ini));
 $pelanggaran_bulan = $pelanggaran_bulan ? (int) $pelanggaran_bulan['c'] : 0;
 
+// ---- Santri terbaru: 5 terakhir by tgl_masuk + hitung santri baru bulan ini ----
+$santri_baru_bulan = db_one($koneksi,
+    "SELECT COUNT(*) AS c FROM santri WHERE status = 'aktif' AND DATE_FORMAT(tgl_masuk, '%Y-%m') = ?", 's', array($bulan_ini));
+$santri_baru_bulan = $santri_baru_bulan ? (int) $santri_baru_bulan['c'] : 0;
+
+$santri_terbaru = db_all($koneksi,
+    "SELECT id, nis, nama, tgl_masuk FROM santri WHERE status = 'aktif' ORDER BY tgl_masuk DESC, id DESC LIMIT 5");
+
 // ---- Seri 7 hari: kehadiran + setoran (aditif, default 0) ----
 $chart_labels = array(); $chart_hadir = array(); $chart_setoran = array();
 $map_hadir = array(); $map_setor = array();
@@ -320,6 +328,20 @@ include __DIR__ . '/includes/header.php';
             <a href="<?= url('modules/hafalan/') ?>"><span class="q-ic">&#9733;</span>Hafalan<span>Setoran &amp; target</span></a>
             <a href="<?= url('modules/keuangan/') ?>"><span class="q-ic">Rp</span>Keuangan<span>SPP &amp; tabungan</span></a>
         </div>
+    </div>
+    <div class="card fh-reveal" style="--i:11">
+        <h3>Santri Terbaru</h3>
+        <div class="stat-num" data-count="<?= $santri_baru_bulan ?>">0</div>
+        <div class="stat-sub">santri baru bulan ini</div>
+        <?php if ($santri_terbaru): ?>
+        <ul class="fh-newlist">
+            <?php foreach ($santri_terbaru as $st): ?>
+            <li><?= profil_link($st['id'], $st['nama']) ?><span class="tgl"><?= e(tgl_indo($st['tgl_masuk'])) ?></span></li>
+            <?php endforeach; ?>
+        </ul>
+        <?php else: ?>
+        <div class="empty">Belum ada data santri.</div>
+        <?php endif; ?>
     </div>
 </div>
 

@@ -501,3 +501,32 @@ body.page-leave .app { opacity: 0; transform: translateY(12px); }
     .tb-prayer-in small { display: none; }
     .stat-num { font-size: 30px; }
 }
+
+/* ============ Link nama santri ke profil ============ */
+.tbl-link { color: var(--brand-active); font-weight: 700; text-decoration: none; }
+.tbl-link:hover { text-decoration: underline; }
+body.dark-mode .tbl-link { color: #9BD96A; }
+
+/* ============ Halaman profil santri ============ */
+.profil-head { display: flex; gap: 22px; align-items: center; flex-wrap: wrap; }
+.profil-foto { width: 112px; height: 112px; border-radius: 50%; object-fit: cover; border: 4px solid var(--brand-soft); box-shadow: var(--shadow-card); flex-shrink: 0; }
+.profil-avatar { width: 112px; height: 112px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: 800; color: #fff; background: linear-gradient(135deg, #75BF43, #4E8C2B); border: 4px solid var(--brand-soft); box-shadow: var(--shadow-card); }
+.profil-head h2 { margin: 0 0 6px; font-size: 24px; letter-spacing: -.01em; }
+.profil-meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 8px; }
+.profil-lama { margin: 8px 0 0; font-size: 13.5px; color: var(--text-soft); font-weight: 600; }
+.profil-lama strong { color: var(--brand-active); }
+body.dark-mode .profil-lama strong { color: #9BD96A; }
+.profil-data { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px 26px; margin-top: 6px; }
+.profil-item .lbl { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text-faint); margin-bottom: 3px; }
+.profil-item .val { font-weight: 600; font-size: 14.5px; }
+.profil-ringkas { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.profil-ringkas .rk { background: var(--banner); border-radius: 12px; padding: 12px 14px; }
+.profil-ringkas .rk .n { font-size: 22px; font-weight: 800; }
+.profil-ringkas .rk .l { font-size: 12px; color: var(--text-soft); font-weight: 600; }
+.fh-newlist { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+.fh-newlist li { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 13.5px; }
+.fh-newlist .tgl { color: var(--text-soft); font-size: 12.5px; white-space: nowrap; }
+@media (max-width: 640px) {
+    .profil-foto, .profil-avatar { width: 88px; height: 88px; font-size: 32px; }
+    .profil-head h2 { font-size: 20px; }
+}

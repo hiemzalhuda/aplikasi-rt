@@ -26,6 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tambah'])) {
     $nama     = trim($_POST['nama'] ?? '');
     $jk       = $_POST['jenis_kelamin'] ?? 'L';
     $lahir    = $_POST['tgl_lahir'] ?: null;
+    $masuk    = $_POST['tgl_masuk'] ?: date('Y-m-d');
     $alamat   = trim($_POST['alamat'] ?? '');
     $kamar_id = trim($_POST['kamar_id'] ?? '');
     if ($nis === '' || $nama === '') {
@@ -34,8 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tambah'])) {
         flash_set('Kamar yang dipilih tidak valid.', 'err');
     } else {
         $ok = db_exec($koneksi,
-            'INSERT INTO santri (nis, nama, jenis_kelamin, tgl_lahir, alamat, tgl_masuk) VALUES (?,?,?,?,?,CURDATE())',
-            'sssss', array($nis, $nama, $jk, $lahir, $alamat));
+            'INSERT INTO santri (nis, nama, jenis_kelamin, tgl_lahir, alamat, tgl_masuk) VALUES (?,?,?,?,?,?)',
+            'ssssss', array($nis, $nama, $jk, $lahir, $alamat, $masuk));
         if ($ok) {
             $sid = (int) $koneksi->insert_id;
             if ($kamar_id !== '') {
@@ -119,6 +120,7 @@ include __DIR__ . '/../../includes/header.php';
             </div>
             <div class="field"><label>Tanggal Lahir</label><input type="date" name="tgl_lahir"></div>
             <div class="field"><label>Alamat</label><input type="text" name="alamat" maxlength="255"></div>
+            <div class="field"><label>Tanggal Mendaftar</label><input type="date" name="tgl_masuk" value="<?= date('Y-m-d') ?>"></div>
             <div class="field"><label>Kamar</label>
                 <select name="kamar_id">
                     <option value="">-- Belum ditempatkan --</option>
@@ -134,17 +136,18 @@ include __DIR__ . '/../../includes/header.php';
 
 <div class="table-wrap">
 <table>
-    <thead><tr><th>NIS</th><th>Nama</th><th>L/P</th><th>Tgl Lahir</th><th>Alamat</th><th>Kamar</th><th>Status</th></tr></thead>
+    <thead><tr><th>NIS</th><th>Nama</th><th>L/P</th><th>Tgl Lahir</th><th>Alamat</th><th>Tgl Daftar</th><th>Kamar</th><th>Status</th></tr></thead>
     <tbody>
     <?php if (!$rows): ?>
-        <tr><td colspan="7" class="empty">Belum ada data santri.</td></tr>
+        <tr><td colspan="8" class="empty">Belum ada data santri.</td></tr>
     <?php else: foreach ($rows as $r): ?>
         <tr>
-            <td><?= e($r['nis']) ?></td>
-            <td><strong><?= e($r['nama']) ?></strong></td>
+            <td><?= profil_link($r['id'], $r['nis']) ?></td>
+            <td><strong><?= profil_link($r['id'], $r['nama']) ?></strong></td>
             <td><?= e($r['jenis_kelamin']) ?></td>
             <td><?= e(tgl_indo($r['tgl_lahir'])) ?></td>
             <td><?= e($r['alamat'] ?: '-') ?></td>
+            <td><?= e(tgl_indo($r['tgl_masuk'])) ?></td>
             <td>
                 <?php if ($r['status'] === 'aktif'): ?>
                 <form method="post" action="" style="display:inline">

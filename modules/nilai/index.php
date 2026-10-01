@@ -89,7 +89,7 @@ $riwayat = db_all($koneksi,
     $types, $params);
 
 $rekap = db_all($koneksi,
-    'SELECT s.nis, s.nama, n.kelas, COUNT(*) AS jml, ROUND(AVG(n.nilai), 1) AS rata
+    'SELECT s.id AS sid, s.nis, s.nama, n.kelas, COUNT(*) AS jml, ROUND(AVG(n.nilai), 1) AS rata
      FROM nilai n JOIN santri s ON s.id = n.santri_id
      ' . $where_sql . '
      GROUP BY n.santri_id, n.kelas ORDER BY rata DESC, s.nama',
@@ -222,8 +222,8 @@ include __DIR__ . '/../../includes/header.php';
         $pred = predikat_nilai((float) $r['rata']);
     ?>
         <tr>
-            <td><?= e($r['nis']) ?></td>
-            <td><?= e($r['nama']) ?></td>
+            <td><?= profil_link($r['sid'], $r['nis']) ?></td>
+            <td><?= profil_link($r['sid'], $r['nama']) ?></td>
             <td><?= $r['kelas'] ? 'Kelas ' . (int) $r['kelas'] : '<span style="opacity:.5">—</span>' ?></td>
             <td><?= (int) $r['jml'] ?></td>
             <td><strong><?= e($r['rata']) ?></strong></td>
@@ -244,7 +244,7 @@ include __DIR__ . '/../../includes/header.php';
     <?php else: foreach ($riwayat as $r): ?>
         <tr>
             <td><?= e(tgl_indo($r['tanggal'])) ?></td>
-            <td><?= e($r['nama']) ?></td>
+            <td><?= profil_link($r['santri_id'], $r['nama']) ?></td>
             <td><?= e($r['mapel']) ?></td>
             <td><?= e($jenis_nilai[$r['jenis']] ?? $r['jenis']) ?></td>
             <td><strong><?= rtrim(rtrim(number_format((float) $r['nilai'], 2), '0'), '.') ?></strong></td>

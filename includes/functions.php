@@ -78,6 +78,25 @@ function tgl_indo($date) {
     return date('d', $t) . ' ' . $bulan[(int) date('n', $t)] . ' ' . date('Y', $t);
 }
 
+/** Link nama santri ke halaman profil. */
+function profil_link($id, $label) {
+    return '<a class="tbl-link" href="' . e(url('modules/santri/profil.php?id=' . (int) $id)) . '">' . e($label) . '</a>';
+}
+
+/** Durasi "X tahun Y bulan Z hari" dari tanggal masuk sampai hari ini. */
+function lama_santri($tgl_masuk) {
+    if (!$tgl_masuk) return '-';
+    try { $a = new DateTime($tgl_masuk); } catch (Exception $e) { return '-'; }
+    $b = new DateTime(date('Y-m-d'));
+    if ($a > $b) return '0 hari';
+    $d = $a->diff($b);
+    $parts = array();
+    if ($d->y) $parts[] = $d->y . ' tahun';
+    if ($d->m) $parts[] = $d->m . ' bulan';
+    if ($d->d || !$parts) $parts[] = $d->d . ' hari';
+    return implode(' ', $parts);
+}
+
 function rupiah($n) {
     return 'Rp ' . number_format((int) $n, 0, ',', '.');
 }

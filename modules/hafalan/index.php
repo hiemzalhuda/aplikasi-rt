@@ -53,7 +53,7 @@ $setoran = db_all($koneksi,
      FROM setoran_hafalan sh JOIN santri s ON s.id = sh.santri_id
      ORDER BY sh.tanggal DESC, sh.id DESC LIMIT 50');
 $progres = db_all($koneksi,
-    "SELECT s.nis, s.nama, COUNT(DISTINCT sh.juz) AS juz_disetor,
+    "SELECT s.id AS sid, s.nis, s.nama, COUNT(DISTINCT sh.juz) AS juz_disetor,
         (SELECT th.target_juz FROM target_hafalan th WHERE th.santri_id = s.id ORDER BY th.id DESC LIMIT 1) AS target
      FROM santri s LEFT JOIN setoran_hafalan sh ON sh.santri_id = s.id AND sh.jenis = 'setoran' AND sh.juz IS NOT NULL
      WHERE s.status = 'aktif' GROUP BY s.id ORDER BY s.nama LIMIT 50");
@@ -127,7 +127,7 @@ include __DIR__ . '/../../includes/header.php';
     ?>
         <tr>
             <td><?= e(tgl_indo($r['tanggal'])) ?></td>
-            <td><?= e($r['nama']) ?></td>
+            <td><?= profil_link($r['santri_id'], $r['nama']) ?></td>
             <td><?= e($jenis_setoran[$r['jenis']] ?? $r['jenis']) ?></td>
             <td><?= e($materi ? implode(', ', $materi) : '-') ?></td>
             <td><?= $r['nilai'] !== null ? (int) $r['nilai'] : '-' ?></td>
@@ -147,8 +147,8 @@ include __DIR__ . '/../../includes/header.php';
         <tr><td colspan="4" class="empty">Belum ada data.</td></tr>
     <?php else: foreach ($progres as $p): ?>
         <tr>
-            <td><?= e($p['nis']) ?></td>
-            <td><?= e($p['nama']) ?></td>
+            <td><?= profil_link($p['sid'], $p['nis']) ?></td>
+            <td><?= profil_link($p['sid'], $p['nama']) ?></td>
             <td><?= (int) $p['juz_disetor'] ?> juz</td>
             <td><?= $p['target'] !== null ? rtrim(rtrim(number_format((float) $p['target'], 1), '0'), '.') . ' juz' : '-' ?></td>
         </tr>
