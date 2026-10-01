@@ -56,10 +56,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $jk     = $_POST['jenis_kelamin'] ?? 'L';
         if (!in_array($jk, array('L', 'P'), true)) $jk = 'L';
         $tpl    = trim($_POST['tempat_lahir'] ?? '') ?: null;
-        $lahir  = $_POST['tgl_lahir'] ?: null;
+        $lahir  = $_POST['tgl_lahir'] ?? null;
         $alamat = trim($_POST['alamat'] ?? '') ?: null;
         $hp     = trim($_POST['no_hp'] ?? '') ?: null;
-        $masuk  = $_POST['tgl_masuk'] ?: null;
+        $masuk  = $_POST['tgl_masuk'] ?? null;
         $cur    = db_one($koneksi, 'SELECT foto FROM santri WHERE id = ?', 'i', array($id));
         list($foto, $ferr) = upload_foto_santri($_FILES['foto'] ?? array(), $cur ? $cur['foto'] : null, $upload_dir);
         if ($ferr) {
@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (isset($_POST['tambah_prestasi'])) {
         $judul = trim($_POST['judul'] ?? '');
         $tingkat = trim($_POST['tingkat'] ?? '') ?: null;
-        $tanggal = $_POST['tanggal'] ?: date('Y-m-d');
+        $tanggal = $_POST['tanggal'] ?? date('Y-m-d');
         $ket = trim($_POST['keterangan'] ?? '') ?: null;
         if ($judul === '') {
             flash_set('Judul prestasi wajib diisi.', 'err');

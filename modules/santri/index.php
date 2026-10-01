@@ -25,8 +25,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tambah'])) {
     $nis      = trim($_POST['nis'] ?? '');
     $nama     = trim($_POST['nama'] ?? '');
     $jk       = $_POST['jenis_kelamin'] ?? 'L';
-    $lahir    = $_POST['tgl_lahir'] ?: null;
-    $masuk    = $_POST['tgl_masuk'] ?: date('Y-m-d');
+    $lahir    = $_POST['tgl_lahir'] ?? null;
+    $masuk    = $_POST['tgl_masuk'] ?? date('Y-m-d');
     $alamat   = trim($_POST['alamat'] ?? '');
     $kamar_id = trim($_POST['kamar_id'] ?? '');
     if ($nis === '' || $nama === '') {
