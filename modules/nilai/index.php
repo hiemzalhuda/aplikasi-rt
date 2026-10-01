@@ -31,15 +31,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $semester = (int) ($_POST['semester'] ?? 1);
         if (!in_array($semester, array(1, 2), true)) $semester = 1;
         $ta = trim($_POST['tahun_ajaran'] ?? '') ?: $ta_default;
+        $kelas = (int) ($_POST['kelas'] ?? 0);
+        if ($kelas < 1 || $kelas > 6) $kelas = null;
         $tanggal = $_POST['tanggal'] ?: date('Y-m-d');
         $keterangan = trim($_POST['keterangan'] ?? '') ?: null;
         if ($santri_id > 0 && $mapel !== '' && $nilai !== null && $nilai >= 0 && $nilai <= 100) {
             $cek = db_one($koneksi, "SELECT id FROM santri WHERE id = ? AND status = 'aktif'", 'i', array($santri_id));
             if ($cek) {
                 db_exec($koneksi,
-                    'INSERT INTO nilai (santri_id, mapel, jenis, nilai, semester, tahun_ajaran, tanggal, keterangan, created_by)
-                     VALUES (?,?,?,?,?,?,?,?,?)',
-                    'issdisssi', array($santri_id, $mapel, $jenis, $nilai, $semester, $ta, $tanggal, $keterangan, $user['id']));
+                    'INSERT INTO nilai (santri_id, mapel, jenis, nilai, semester, tahun_ajaran, kelas, tanggal, keterangan, created_by)
+                     VALUES (?,?,?,?,?,?,?,?,?,?)',
+                    'issdisissi', array($santri_id, $mapel, $jenis, $nilai, $semester, $ta, $kelas, $tanggal, $keterangan, $user['id']));
                 flash_set('Nilai berhasil dicatat.');
             } else {
                 flash_set('Santri tidak valid / tidak aktif.', 'err');
@@ -62,6 +64,8 @@ $f_santri = (int) ($_GET['santri_id'] ?? 0);
 $f_semester = (int) ($_GET['semester'] ?? 0);
 $f_ta = trim($_GET['tahun_ajaran'] ?? $ta_default);
 $f_mapel = trim($_GET['mapel'] ?? '');
+$f_kelas = (int) ($_GET['kelas'] ?? 0);
+if ($f_kelas < 1 || $f_kelas > 6) $f_kelas = 0;
 
 $where = array();
 $types = '';
@@ -70,6 +74,7 @@ if ($f_santri > 0) { $where[] = 'n.santri_id = ?'; $types .= 'i'; $params[] = $f
 if ($f_semester > 0) { $where[] = 'n.semester = ?'; $types .= 'i'; $params[] = $f_semester; }
 if ($f_ta !== '') { $where[] = 'n.tahun_ajaran = ?'; $types .= 's'; $params[] = $f_ta; }
 if ($f_mapel !== '') { $where[] = 'n.mapel = ?'; $types .= 's'; $params[] = $f_mapel; }
+if ($f_kelas > 0) { $where[] = 'n.kelas = ?'; $types .= 'i'; $params[] = $f_kelas; }
 $where_sql = $where ? 'WHERE ' . implode(' AND ', $where) : '';
 
 $santri = db_all($koneksi, "SELECT id, nis, nama FROM santri WHERE status = 'aktif' ORDER BY nama");
@@ -84,10 +89,10 @@ $riwayat = db_all($koneksi,
     $types, $params);
 
 $rekap = db_all($koneksi,
-    'SELECT s.nis, s.nama, COUNT(*) AS jml, ROUND(AVG(n.nilai), 1) AS rata
+    'SELECT s.nis, s.nama, n.kelas, COUNT(*) AS jml, ROUND(AVG(n.nilai), 1) AS rata
      FROM nilai n JOIN santri s ON s.id = n.santri_id
      ' . $where_sql . '
-     GROUP BY n.santri_id ORDER BY rata DESC, s.nama',
+     GROUP BY n.santri_id, n.kelas ORDER BY rata DESC, s.nama',
     $types, $params);
 
 include __DIR__ . '/../../includes/header.php';
@@ -132,6 +137,14 @@ include __DIR__ . '/../../includes/header.php';
                 </div>
                 <div class="field"><label>Tahun Ajaran</label>
                     <input type="text" name="tahun_ajaran" maxlength="9" value="<?= e($ta_default) ?>" placeholder="cth: 2026/2027">
+                </div>
+                <div class="field"><label>Kelas Madrasah <span style="opacity:.6">(opsional)</span></label>
+                    <select name="kelas">
+                        <option value="">—</option>
+                        <?php for ($i = 1; $i <= 6; $i++): ?>
+                        <option value="<?= $i ?>">Kelas <?= $i ?></option>
+                        <?php endfor; ?>
+                    </select>
                 </div>
                 <div class="field"><label>Tanggal</label>
                     <input type="date" name="tanggal" value="<?= date('Y-m-d') ?>">
@@ -181,6 +194,14 @@ include __DIR__ . '/../../includes/header.php';
                         <?php endif; ?>
                     </select>
                 </div>
+                <div class="field"><label>Kelas</label>
+                    <select name="kelas">
+                        <option value="0">Semua</option>
+                        <?php for ($i = 1; $i <= 6; $i++): ?>
+                        <option value="<?= $i ?>"<?= $f_kelas === $i ? ' selected' : '' ?>>Kelas <?= $i ?></option>
+                        <?php endfor; ?>
+                    </select>
+                </div>
             </div>
             <div class="form-actions">
                 <button type="submit" class="btn">Terapkan</button>
@@ -190,19 +211,20 @@ include __DIR__ . '/../../includes/header.php';
     </div>
 </div>
 
-<h2 class="section-title">Rekap Rata-rata<?= $f_ta !== '' ? ' — ' . e($f_ta) : '' ?><?= $f_semester > 0 ? ' · Semester ' . $f_semester : '' ?></h2>
+<h2 class="section-title">Rekap Rata-rata<?= $f_ta !== '' ? ' — ' . e($f_ta) : '' ?><?= $f_semester > 0 ? ' · Semester ' . $f_semester : '' ?><?= $f_kelas > 0 ? ' · Kelas ' . $f_kelas : '' ?></h2>
 <div class="table-wrap">
 <table>
-    <thead><tr><th>NIS</th><th>Nama</th><th>Jml Penilaian</th><th>Rata-rata</th><th>Predikat</th></tr></thead>
+    <thead><tr><th>NIS</th><th>Nama</th><th>Kelas</th><th>Jml Penilaian</th><th>Rata-rata</th><th>Predikat</th></tr></thead>
     <tbody>
     <?php if (!$rekap): ?>
-        <tr><td colspan="5" class="empty">Belum ada data nilai untuk filter ini.</td></tr>
+        <tr><td colspan="6" class="empty">Belum ada data nilai untuk filter ini.</td></tr>
     <?php else: foreach ($rekap as $r):
         $pred = predikat_nilai((float) $r['rata']);
     ?>
         <tr>
             <td><?= e($r['nis']) ?></td>
             <td><?= e($r['nama']) ?></td>
+            <td><?= $r['kelas'] ? 'Kelas ' . (int) $r['kelas'] : '<span style="opacity:.5">—</span>' ?></td>
             <td><?= (int) $r['jml'] ?></td>
             <td><strong><?= e($r['rata']) ?></strong></td>
             <td><span class="badge"><?= e($pred) ?></span></td>
@@ -215,10 +237,10 @@ include __DIR__ . '/../../includes/header.php';
 <h2 class="section-title">Riwayat Nilai</h2>
 <div class="table-wrap">
 <table>
-    <thead><tr><th>Tanggal</th><th>Santri</th><th>Mapel</th><th>Jenis</th><th>Nilai</th><th>Sem./TA</th><th>Aksi</th></tr></thead>
+    <thead><tr><th>Tanggal</th><th>Santri</th><th>Mapel</th><th>Jenis</th><th>Nilai</th><th>Kelas</th><th>Sem./TA</th><th>Aksi</th></tr></thead>
     <tbody>
     <?php if (!$riwayat): ?>
-        <tr><td colspan="7" class="empty">Belum ada nilai tercatat.</td></tr>
+        <tr><td colspan="8" class="empty">Belum ada nilai tercatat.</td></tr>
     <?php else: foreach ($riwayat as $r): ?>
         <tr>
             <td><?= e(tgl_indo($r['tanggal'])) ?></td>
@@ -226,6 +248,7 @@ include __DIR__ . '/../../includes/header.php';
             <td><?= e($r['mapel']) ?></td>
             <td><?= e($jenis_nilai[$r['jenis']] ?? $r['jenis']) ?></td>
             <td><strong><?= rtrim(rtrim(number_format((float) $r['nilai'], 2), '0'), '.') ?></strong></td>
+            <td><?= $r['kelas'] ? 'Kelas ' . (int) $r['kelas'] : '<span style="opacity:.5">—</span>' ?></td>
             <td><?= (int) $r['semester'] ?> / <?= e($r['tahun_ajaran']) ?></td>
             <td>
                 <form method="post" action="" style="display:inline" onsubmit="return confirm('Hapus nilai <?= e($r['mapel']) ?> (<?= e($r['nama']) ?>)?')">

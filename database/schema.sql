@@ -108,12 +108,14 @@ CREATE TABLE IF NOT EXISTS sesi_kehadiran (
   kode        VARCHAR(40) NOT NULL UNIQUE COMMENT 'kode unik sesi, siap untuk QR',
   tanggal     DATE NOT NULL,
   jenis       ENUM('subuh','dzuhur','ashar','maghrib','isya','ngaji','madrasah') NOT NULL,
+  kelas       TINYINT UNSIGNED NULL DEFAULT NULL COMMENT '1-6, hanya untuk sesi madrasah',
   keterangan  VARCHAR(120) NULL,
   created_by  INT UNSIGNED NULL,
   created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_sk_user FOREIGN KEY (created_by)
     REFERENCES users (id) ON DELETE SET NULL,
-  INDEX idx_sesi_tgl_jenis (tanggal, jenis)
+  INDEX idx_sesi_tgl_jenis (tanggal, jenis),
+  INDEX idx_sesi_jenis_kelas (jenis, kelas)
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS kehadiran (
@@ -175,6 +177,7 @@ CREATE TABLE IF NOT EXISTS nilai (
   nilai        DECIMAL(5,2) NOT NULL COMMENT '0-100',
   semester     TINYINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '1=ganjil, 2=genap',
   tahun_ajaran VARCHAR(9) NOT NULL COMMENT 'mis. 2026/2027',
+  kelas        TINYINT UNSIGNED NULL DEFAULT NULL COMMENT '1-6, kelas madrasah (opsional)',
   tanggal      DATE NOT NULL,
   keterangan   VARCHAR(255) NULL,
   created_by   INT UNSIGNED NULL,
@@ -184,7 +187,8 @@ CREATE TABLE IF NOT EXISTS nilai (
   CONSTRAINT fk_nilai_user FOREIGN KEY (created_by)
     REFERENCES users (id) ON DELETE SET NULL,
   INDEX idx_nilai_santri_ta (santri_id, tahun_ajaran, semester),
-  INDEX idx_nilai_mapel (mapel)
+  INDEX idx_nilai_mapel (mapel),
+  INDEX idx_nilai_kelas (kelas)
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------

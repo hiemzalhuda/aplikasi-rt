@@ -7,21 +7,62 @@ $user = require_login();
 $title = 'Kehadiran';
 $menu = 'kehadiran';
 
-$jenis_list = array(
-    'subuh' => 'Sholat Subuh', 'dzuhur' => 'Sholat Dzuhur', 'ashar' => 'Sholat Ashar',
-    'maghrib' => 'Sholat Maghrib', 'isya' => 'Sholat Isya',
-    'ngaji' => 'Ngaji', 'madrasah' => 'Madrasah',
+$waktu_sholat = array(
+    'subuh' => 'Subuh', 'dzuhur' => 'Dzuhur', 'ashar' => 'Ashar',
+    'maghrib' => 'Maghrib', 'isya' => 'Isya',
 );
+$kategori_jenis = array(
+    'Sholat'   => array('subuh', 'dzuhur', 'ashar', 'maghrib', 'isya'),
+    'Madrasah' => array('madrasah'),
+    'Ngaji'    => array('ngaji'),
+);
+
+/* Kategori bersifat turunan dari jenis (tanpa kolom fisik). */
+function kategori_kehadiran($jenis) {
+    if (in_array($jenis, array('subuh', 'dzuhur', 'ashar', 'maghrib', 'isya'), true)) return 'Sholat';
+    if ($jenis === 'madrasah') return 'Madrasah';
+    return 'Ngaji';
+}
+
+/* Label sesi: madrasah menyertakan kelas, sesi lama tanpa kelas = "Umum". */
+function label_sesi($jenis, $kelas = null) {
+    if ($jenis === 'madrasah') {
+        $k = (int) $kelas;
+        return ($k >= 1 && $k <= 6) ? 'Madrasah — Kelas ' . $k : 'Madrasah (Umum)';
+    }
+    $map = array(
+        'subuh' => 'Sholat Subuh', 'dzuhur' => 'Sholat Dzuhur', 'ashar' => 'Sholat Ashar',
+        'maghrib' => 'Sholat Maghrib', 'isya' => 'Sholat Isya', 'ngaji' => 'Ngaji',
+    );
+    return $map[$jenis] ?? $jenis;
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['buat_sesi'])) {
         $tanggal = $_POST['tanggal'] ?: date('Y-m-d');
-        $jenis = $_POST['jenis'] ?? 'subuh';
-        if (!isset($jenis_list[$jenis])) $jenis = 'subuh';
-        $kode = strtoupper(date('ymd', strtotime($tanggal)) . '-' . $jenis . '-' . substr(md5(uniqid('', true)), 0, 4));
+        $kategori = $_POST['kategori'] ?? 'Sholat';
+        if (!isset($kategori_jenis[$kategori])) $kategori = 'Sholat';
+        $jenis = 'subuh';
+        $kelas = null;
+        if ($kategori === 'Sholat') {
+            $jenis = $_POST['waktu'] ?? 'subuh';
+            if (!isset($waktu_sholat[$jenis])) $jenis = 'subuh';
+            $kode = strtoupper(date('ymd', strtotime($tanggal)) . '-' . $jenis . '-' . substr(md5(uniqid('', true)), 0, 4));
+        } elseif ($kategori === 'Madrasah') {
+            $jenis = 'madrasah';
+            $kelas = (int) ($_POST['kelas'] ?? 0);
+            if ($kelas < 1 || $kelas > 6) {
+                flash_set('Pilih kelas 1–6 untuk sesi Madrasah.', 'err');
+                redirect('modules/kehadiran/');
+            }
+            $kode = strtoupper(date('ymd', strtotime($tanggal)) . '-MADRASAH-K' . $kelas . '-' . substr(md5(uniqid('', true)), 0, 4));
+        } else {
+            $jenis = 'ngaji';
+            $kode = strtoupper(date('ymd', strtotime($tanggal)) . '-NGAJI-' . substr(md5(uniqid('', true)), 0, 4));
+        }
         $ok = db_exec($koneksi,
-            'INSERT INTO sesi_kehadiran (kode, tanggal, jenis, created_by) VALUES (?,?,?,?)',
-            'sssi', array($kode, $tanggal, $jenis, $user['id']));
+            'INSERT INTO sesi_kehadiran (kode, tanggal, jenis, kelas, created_by) VALUES (?,?,?,?,?)',
+            'sssii', array($kode, $tanggal, $jenis, $kelas, $user['id']));
         flash_set($ok ? 'Sesi kehadiran dibuat (kode: ' . $kode . ').' : 'Gagal membuat sesi.', $ok ? 'ok' : 'err');
         redirect('modules/kehadiran/');
     } elseif (isset($_POST['simpan_absen'])) {
@@ -59,11 +100,27 @@ if (!empty($_GET['sesi'])) {
     }
 }
 
+// ---- Filter kategori (GET) ----
+$f_kategori = $_GET['kategori'] ?? '';
+if (!isset($kategori_jenis[$f_kategori])) $f_kategori = '';
+
+$where = '';
+$types = '';
+$params = array();
+if ($f_kategori !== '') {
+    $jl = $kategori_jenis[$f_kategori];
+    $where = 'WHERE sk.jenis IN (' . implode(',', array_fill(0, count($jl), '?')) . ')';
+    $types = str_repeat('s', count($jl));
+    $params = $jl;
+}
+
 $sesi_list = db_all($koneksi,
     'SELECT sk.*, u.nama_lengkap AS pencatat,
         (SELECT COUNT(*) FROM kehadiran k WHERE k.sesi_id = sk.id) AS tercatat
      FROM sesi_kehadiran sk LEFT JOIN users u ON u.id = sk.created_by
-     ORDER BY sk.tanggal DESC, sk.id DESC LIMIT 30');
+     ' . $where . '
+     ORDER BY sk.tanggal DESC, sk.id DESC LIMIT 30',
+    $types, $params);
 
 include __DIR__ . '/../../includes/header.php';
 ?>
@@ -73,22 +130,50 @@ include __DIR__ . '/../../includes/header.php';
     <form method="post" action="">
         <div class="form-grid">
             <div class="field"><label>Tanggal</label><input type="date" name="tanggal" value="<?= date('Y-m-d') ?>"></div>
-            <div class="field"><label>Jenis Kegiatan</label>
-                <select name="jenis">
-                    <?php foreach ($jenis_list as $k => $v): ?>
+            <div class="field"><label>Kategori</label>
+                <select name="kategori" id="katSelect">
+                    <?php foreach (array_keys($kategori_jenis) as $kat): ?>
+                    <option value="<?= e($kat) ?>"><?= e($kat) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="field" id="waktuWrap"><label>Waktu Sholat</label>
+                <select name="waktu">
+                    <?php foreach ($waktu_sholat as $k => $v): ?>
                     <option value="<?= e($k) ?>"><?= e($v) ?></option>
                     <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="field" id="kelasWrap" style="display:none"><label>Kelas Madrasah</label>
+                <select name="kelas">
+                    <option value="">-- pilih kelas --</option>
+                    <?php for ($i = 1; $i <= 6; $i++): ?>
+                    <option value="<?= $i ?>">Kelas <?= $i ?></option>
+                    <?php endfor; ?>
                 </select>
             </div>
         </div>
         <div class="form-actions"><button type="submit" name="buat_sesi" class="btn">Buat Sesi</button></div>
     </form>
 </div>
+<script>
+(function () {
+    var kat = document.getElementById('katSelect');
+    var w = document.getElementById('waktuWrap');
+    var k = document.getElementById('kelasWrap');
+    function sync() {
+        w.style.display = kat.value === 'Sholat' ? '' : 'none';
+        k.style.display = kat.value === 'Madrasah' ? '' : 'none';
+    }
+    kat.addEventListener('change', sync);
+    sync();
+})();
+</script>
 
 <?php if ($sesi_aktif): ?>
 <div class="form-card">
     <h2 class="section-title" style="margin-top:0">
-        Absensi: <?= e($jenis_list[$sesi_aktif['jenis']] ?? $sesi_aktif['jenis']) ?> —
+        Absensi: <?= e(label_sesi($sesi_aktif['jenis'], $sesi_aktif['kelas'] ?? null)) ?> —
         <?= e(tgl_indo($sesi_aktif['tanggal'])) ?>
         <span class="badge badge-ok"><?= e($sesi_aktif['kode']) ?></span>
     </h2>
@@ -120,17 +205,24 @@ include __DIR__ . '/../../includes/header.php';
 <?php endif; ?>
 
 <h2 class="section-title">Sesi Terakhir</h2>
+<div style="margin-bottom:12px; display:flex; gap:8px; flex-wrap:wrap">
+    <a class="btn btn-sm<?= $f_kategori === '' ? '' : ' btn-ghost' ?>" href="<?= url('modules/kehadiran/') ?>">Semua</a>
+    <?php foreach (array_keys($kategori_jenis) as $kat): ?>
+    <a class="btn btn-sm<?= $f_kategori === $kat ? '' : ' btn-ghost' ?>" href="<?= url('modules/kehadiran/?kategori=' . $kat) ?>"><?= e($kat) ?></a>
+    <?php endforeach; ?>
+</div>
 <div class="table-wrap">
 <table>
-    <thead><tr><th>Kode</th><th>Tanggal</th><th>Jenis</th><th>Tercatat</th><th>Aksi</th></tr></thead>
+    <thead><tr><th>Kode</th><th>Tanggal</th><th>Kategori</th><th>Jenis</th><th>Tercatat</th><th>Aksi</th></tr></thead>
     <tbody>
     <?php if (!$sesi_list): ?>
-        <tr><td colspan="5" class="empty">Belum ada sesi kehadiran.</td></tr>
+        <tr><td colspan="6" class="empty">Belum ada sesi kehadiran<?= $f_kategori !== '' ? ' untuk kategori ' . e($f_kategori) : '' ?>.</td></tr>
     <?php else: foreach ($sesi_list as $s): ?>
         <tr>
             <td><span class="badge badge-ok"><?= e($s['kode']) ?></span></td>
             <td><?= e(tgl_indo($s['tanggal'])) ?></td>
-            <td><?= e($jenis_list[$s['jenis']] ?? $s['jenis']) ?></td>
+            <td><span class="badge"><?= e(kategori_kehadiran($s['jenis'])) ?></span></td>
+            <td><?= e(label_sesi($s['jenis'], $s['kelas'] ?? null)) ?></td>
             <td><?= (int) $s['tercatat'] ?></td>
             <td><a class="btn btn-sm" href="<?= url('modules/kehadiran/?sesi=' . (int) $s['id']) ?>">Absen</a></td>
         </tr>
