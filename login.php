@@ -25,10 +25,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Masuk — <?= e(defined('APP_NAME') ? APP_NAME : 'Manajemen Santri') ?></title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="<?= url('assets/style.css') ?>">
 </head>
 <body>
 <div class="login-wrap">
+    <div class="login-orb o1"></div>
+    <div class="login-orb o2"></div>
+    <div class="login-orb o3"></div>
     <form class="login-card" method="post" action="">
         <h2><?= e(defined('APP_NAME') ? APP_NAME : 'Manajemen Santri') ?></h2>
         <p>Sistem informasi pondok pesantren</p>
