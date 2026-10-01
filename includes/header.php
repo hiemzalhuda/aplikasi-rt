@@ -15,6 +15,10 @@ $nav = array(
     'pelanggaran' => array('Pelanggaran', 'modules/pelanggaran/'),
 );
 $u = current_user();
+// Menu manajemen pengguna hanya untuk admin
+if ($u && $u['role'] === 'admin') {
+    $nav['users'] = array('Pengguna', 'modules/users/');
+}
 ?>
 <!DOCTYPE html>
 <html lang="id">
