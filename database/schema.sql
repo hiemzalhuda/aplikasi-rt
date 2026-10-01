@@ -165,6 +165,29 @@ CREATE TABLE IF NOT EXISTS setoran_hafalan (
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
+-- 4b. Nilai akademik santri
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS nilai (
+  id           INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  santri_id    INT UNSIGNED NOT NULL,
+  mapel        VARCHAR(60) NOT NULL,
+  jenis        ENUM('tugas','UH','UTS','UAS') NOT NULL DEFAULT 'tugas',
+  nilai        DECIMAL(5,2) NOT NULL COMMENT '0-100',
+  semester     TINYINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '1=ganjil, 2=genap',
+  tahun_ajaran VARCHAR(9) NOT NULL COMMENT 'mis. 2026/2027',
+  tanggal      DATE NOT NULL,
+  keterangan   VARCHAR(255) NULL,
+  created_by   INT UNSIGNED NULL,
+  created_at   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_nilai_santri FOREIGN KEY (santri_id)
+    REFERENCES santri (id) ON DELETE CASCADE,
+  CONSTRAINT fk_nilai_user FOREIGN KEY (created_by)
+    REFERENCES users (id) ON DELETE SET NULL,
+  INDEX idx_nilai_santri_ta (santri_id, tahun_ajaran, semester),
+  INDEX idx_nilai_mapel (mapel)
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------
 -- 5. Keuangan (SPP + tabungan)
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS tagihan_spp (

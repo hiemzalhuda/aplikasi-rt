@@ -11,6 +11,7 @@ $nav = array(
     'asrama'      => array('Asrama',      'modules/asrama/'),
     'kehadiran'   => array('Kehadiran',   'modules/kehadiran/'),
     'hafalan'     => array('Hafalan',     'modules/hafalan/'),
+    'nilai'       => array('Nilai',       'modules/nilai/'),
     'keuangan'    => array('Keuangan',    'modules/keuangan/'),
     'pelanggaran' => array('Pelanggaran', 'modules/pelanggaran/'),
 );
