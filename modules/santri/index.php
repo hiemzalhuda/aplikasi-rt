@@ -146,7 +146,6 @@ include __DIR__ . '/../../includes/header.php';
             <input type="text" name="q" id="snPageSearchInput" class="sn-search-input" placeholder="Cari nama, NIS, atau alamat..."
                    value="<?= e($q) ?>" autocomplete="off">
         </form>
-        <div class="sn-search-results" id="snPageSearchResults"></div>
     </div>
     <?php if ($can_edit): ?>
     <button type="button" class="btn" data-snmodal-open="modalTambahSantri">
@@ -165,7 +164,7 @@ include __DIR__ . '/../../includes/header.php';
 <div class="table-wrap">
 <table>
     <thead><tr><th>NIS</th><th>Nama</th><th>L/P</th><th>Tgl Lahir</th><th>Alamat</th><th>Kamar</th><th>Tgl Daftar</th><th>Status</th></tr></thead>
-    <tbody>
+    <tbody id="snSantriBody">
     <?php if (!$rows): ?>
         <tr><td colspan="8" class="empty">Belum ada data santri.</td></tr>
     <?php else: foreach ($rows as $r): ?>

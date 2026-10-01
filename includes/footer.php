@@ -239,7 +239,55 @@
     }
 
     snAutocomplete('snGlobalSearch', 'snGlobalSearchInput', 'snGlobalSearchResults'); // header
-    snAutocomplete('snPageSearch', 'snPageSearchInput', 'snPageSearchResults');       // halaman santri
+})();
+
+/* ============ FILTER LIVE DAFTAR SANTRI (ketik -> tabel menyesuaikan) ============ */
+(function () {
+    var input = document.getElementById('snPageSearchInput');
+    var tbody = document.getElementById('snSantriBody');
+    if (!input || !tbody) return;
+    var timer = null;
+    var emptyRow = null;
+
+    function hasQueryQ() { return new URLSearchParams(location.search).has('q'); }
+
+    /** Teks yg dicari: kolom NIS (0), Nama (1), Alamat (4). */
+    function rowText(tr) {
+        var c = tr.cells;
+        if (!c || c.length < 5) return '';
+        return (c[0].textContent + ' ' + c[1].textContent + ' ' + c[4].textContent).toLowerCase();
+    }
+    function toggleEmpty(show) {
+        if (show && !emptyRow) {
+            emptyRow = document.createElement('tr');
+            emptyRow.innerHTML = '<td colspan="8" class="empty">Tidak ada santri yang cocok dengan pencarian.</td>';
+            tbody.appendChild(emptyRow);
+        }
+        if (emptyRow) emptyRow.style.display = show ? '' : 'none';
+    }
+    function applyFilter() {
+        var q = input.value.trim().toLowerCase();
+        if (q === '') {
+            if (hasQueryQ()) { location.href = location.pathname; return; } // balik ke daftar penuh
+            tbody.querySelectorAll('tr').forEach(function (tr) {
+                if (tr !== emptyRow) tr.style.display = '';
+            });
+            toggleEmpty(false);
+            return;
+        }
+        var visible = 0;
+        tbody.querySelectorAll('tr').forEach(function (tr) {
+            if (tr === emptyRow) return;
+            var hit = rowText(tr).indexOf(q) !== -1;
+            tr.style.display = hit ? '' : 'none';
+            if (hit) visible++;
+        });
+        toggleEmpty(visible === 0);
+    }
+    input.addEventListener('input', function () {
+        clearTimeout(timer);
+        timer = setTimeout(applyFilter, 150);
+    });
 })();
 </script>
 </body>
