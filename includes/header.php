@@ -46,12 +46,13 @@ try { if (localStorage.getItem('santriDark') === '1') document.body.classList.ad
 <div class="app">
     <aside class="sidebar">
         <div class="brand">
-            <div class="brand-logo">R</div>
+            <div class="brand-logo"><i class="fa-solid fa-house-user"></i></div>
             <div>
                 <div class="brand-name"><?= e(defined('APP_NAME') ? APP_NAME : 'SI-RT') ?></div>
                 <div class="brand-sub"><?= e(rt_label()) ?></div>
             </div>
         </div>
+        <div class="nav-label">Menu</div>
         <nav class="nav">
             <?php foreach ($nav as $key => $item): ?>
             <a href="<?= url($item[1]) ?>" class="nav-link<?= $key === $menu ? ' active' : '' ?>">

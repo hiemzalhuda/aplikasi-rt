@@ -106,303 +106,216 @@ include __DIR__ . '/includes/header.php';
     .fh-orb.o2 { width: 380px; height: 380px; bottom: -190px; right: 8%; opacity: .55; animation: fhFloat2 12s ease-in-out infinite alternate-reverse; }
     .fh-orb.o3 { width: 110px; height: 110px; top: 26%; left: 44%; animation: fhFloat3 7s ease-in-out infinite alternate; }
     .fh-orb.o4 { width: 170px; height: 170px; bottom: -70px; left: 24%; opacity: .6; animation: fhFloat4 11s ease-in-out infinite alternate; }
-    @keyframes fhFloat1 { from { transform: translate(0,0) scale(1); } to { transform: translate(24px,30px) scale(1.06); } }
-    @keyframes fhFloat2 { from { transform: translate(0,0) scale(1); } to { transform: translate(-30px,-22px) scale(1.08); } }
-    @keyframes fhFloat3 { from { transform: translate(0,0); } to { transform: translate(-18px,20px); } }
-    @keyframes fhFloat4 { from { transform: translate(0,0) scale(1); } to { transform: translate(20px,-18px) scale(1.05); } }
-    .fh-left { position: relative; z-index: 2; }
-    .fh-badge {
-        display: inline-block;
-        background: rgba(255,255,255,.45);
-        border: 1px solid rgba(23,33,17,.12);
-        color: #2F5B22;
-        font-size: 11px; font-weight: 800;
-        letter-spacing: .12em; text-transform: uppercase;
-        padding: 6px 14px; border-radius: 999px;
-        margin-bottom: 10px;
-    }
-    .fh-left h1 { margin: 0 0 6px; font-size: 28px; font-weight: 800; letter-spacing: -.02em; color: #172111; }
-    .fh-date { margin: 0; font-size: 14px; font-weight: 600; color: #3E5A34; }
-    .fh-actions { position: relative; z-index: 2; display: flex; gap: 10px; flex-wrap: wrap; }
-    .fh-btn {
-        display: inline-flex; align-items: center; gap: 8px;
-        padding: 12px 20px; border-radius: 14px;
-        font-family: var(--font); font-size: 14px; font-weight: 700;
-        text-decoration: none; cursor: pointer;
-        transition: transform .35s var(--ease-spring), box-shadow .3s var(--ease-out), background .2s;
-    }
-    .fh-btn:active { transform: scale(.94); }
-    .fh-btn-filled { background: #fff; color: #2F6B23; box-shadow: 0 4px 14px rgba(46,90,30,.22); }
-    .fh-btn-filled:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(46,90,30,.28); }
-    .fh-btn-tonal { background: rgba(255,255,255,.28); color: #172111; border: 1px solid rgba(23,33,17,.22); }
-    .fh-btn-tonal:hover { background: rgba(255,255,255,.45); transform: translateY(-2px); }
 
-    /* ============ Kartu stat ala FINO (ikon + count-up) ============ */
-    .fh-stat { display: flex; gap: 14px; align-items: flex-start; }
-    .fh-ic {
-        width: 48px; height: 48px; border-radius: 16px; flex-shrink: 0;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 22px; font-weight: 800; color: #fff;
-    }
-    .fh-ic.g1 { background: linear-gradient(135deg, #75BF43, #5EA332); box-shadow: 0 4px 12px rgba(117,191,67,.35); }
-    .fh-ic.g2 { background: linear-gradient(135deg, #8FD0A8, #4E9B6A); box-shadow: 0 4px 12px rgba(78,155,106,.35); }
-    .fh-ic.g3 { background: linear-gradient(135deg, #B9DE96, #7FBF5A); box-shadow: 0 4px 12px rgba(127,191,90,.35); }
-    .fh-ic.g4 { background: linear-gradient(135deg, #F2C14E, #D9A021); box-shadow: 0 4px 12px rgba(217,160,33,.35); }
-    .fh-stat-body { min-width: 0; }
-    .fh-stat .stat-num { font-size: 32px; }
-    .fh-stat .stat-rp { font-size: 24px; font-weight: 800; letter-spacing: -.01em; }
+<?php
+// ---- Data turunan untuk tampilan baru ----
+$nama_depan = strtok(trim($user['nama'] ?? 'Pengguna'), ' ');
+$tgl_caps = mb_strtoupper($tgl_indo_full, 'UTF-8');
+$iuran_persen = $iuran_total > 0 ? (int) round($iuran_lunas / $iuran_total * 100) : 0;
+$bulan_nama = $bulan_id[(int) date('n')];
 
-    /* ============ Grafik ============ */
-    .fh-chart { position: relative; height: 260px; }
-    .fh-chart-legend { display: flex; gap: 16px; margin-top: 12px; font-size: 12.5px; font-weight: 600; color: var(--text-soft); }
-    .fh-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: baseline; }
+// Kalender bulan berjalan
+$cal_y = (int) date('Y'); $cal_m = (int) date('n'); $cal_today = (int) date('j');
+$cal_first = (int) date('w', mktime(0, 0, 0, $cal_m, 1, $cal_y));
+$cal_days = (int) date('t', mktime(0, 0, 0, $cal_m, 1, $cal_y));
+$nama_hari_pendek = array('S', 'S', 'R', 'K', 'J', 'S', 'M');
 
-    /* ============ Stagger reveal M3 ============ */
-    .fh-reveal { animation: fhIn .55s var(--ease-spring) both; animation-delay: calc(var(--i, 0) * .07s); }
-    @keyframes fhIn { from { opacity: 0; transform: translateY(18px) scale(.98); } to { opacity: 1; transform: none; } }
+$role = $user['role'] ?? '';
+$boleh_keuangan = in_array($role, array('admin', 'ketua', 'bendahara'), true);
+$boleh_warga = in_array($role, array('admin', 'ketua', 'sekretaris'), true);
 
-    /* ============ Aksi cepat ============ */
-    .fh-quick { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
-    .fh-quick a {
-        display: flex; flex-direction: column; gap: 6px;
-        background: var(--banner); border: 1px solid var(--border);
-        border-radius: 14px; padding: 16px;
-        text-decoration: none; color: var(--text);
-        font-weight: 700; font-size: 14px;
-        transition: transform .35s var(--ease-spring), box-shadow .3s var(--ease-out), background .2s;
-    }
-    .fh-quick a:hover { transform: translateY(-3px); box-shadow: var(--shadow-pop); background: var(--card); }
-    .fh-quick a span { font-size: 12px; font-weight: 600; color: var(--text-soft); }
-    .fh-quick .q-ic { font-size: 24px; }
+include __DIR__ . '/includes/header.php';
+?>
 
-    /* ============ Daftar ringkas dashboard ============ */
-    .fh-list { display: flex; flex-direction: column; gap: 10px; }
-    .fh-item {
-        display: flex; gap: 12px; align-items: flex-start;
-        background: var(--banner); border: 1px solid var(--border);
-        border-radius: 12px; padding: 12px 14px;
-    }
-    .fh-item .fi-ic {
-        width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 15px; color: #fff;
-        background: linear-gradient(135deg, #75BF43, #5EA332);
-    }
-    .fh-item .fi-body { min-width: 0; flex: 1; }
-    .fh-item .fi-title { font-weight: 700; font-size: 13.5px; }
-    .fh-item .fi-sub { font-size: 12px; color: var(--text-soft); margin-top: 2px; }
-    .fh-empty { color: var(--text-soft); font-size: 13px; padding: 12px 4px; }
-    .badge-st { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
-    .badge-st.baru { background: #FFF3CD; color: #8a6d00; }
-    .badge-st.diproses { background: #D6E9FF; color: #1d5fb8; }
-    .badge-st.selesai { background: #D9F2DF; color: #2F6B23; }
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    /* ============ Dark mode: hero tetap hijau tapi lebih pekat ============ */
-    body.dark-mode .fh-hero { background: linear-gradient(135deg, #33511F 0%, #3E6327 55%, #2C471C 100%); }
-    body.dark-mode .fh-left h1 { color: #F2F7EC; }
-    body.dark-mode .fh-date { color: #D9E8C9; }
-    body.dark-mode .fh-badge { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.22); color: #EAF3DC; }
-    body.dark-mode .fh-btn-filled { background: #EDF4EA; color: #2F5B22; }
-    body.dark-mode .fh-btn-tonal { background: rgba(255,255,255,.12); color: #F2F7EC; border-color: rgba(255,255,255,.28); }
-    body.dark-mode .fh-btn-tonal:hover { background: rgba(255,255,255,.22); }
+<div class="dash-date"><?= e($tgl_caps) ?></div>
+<h1 class="dash-greet"><?= e($sapaan) ?>, <?= e($nama_depan) ?>.</h1>
 
-    @media (max-width: 640px) {
-        .fh-hero { padding: 22px 20px; }
-        .fh-left h1 { font-size: 22px; }
-        .fh-actions { width: 100%; }
-        .fh-btn { flex: 1; justify-content: center; }
-        .fh-chart { height: 220px; }
-    }
-</style>
-
-<!-- ==================== HERO GREETING ==================== -->
-<div class="fh-hero fh-reveal" style="--i:0">
-    <div class="fh-orbs">
-        <div class="fh-orb o1"></div>
-        <div class="fh-orb o2"></div>
-        <div class="fh-orb o3"></div>
-        <div class="fh-orb o4"></div>
-    </div>
-    <div class="fh-left">
-        <div class="fh-badge"><?= e(rt_label()) ?></div>
-        <h1><?= $sapaan ?>, <?= e($user['nama']) ?></h1>
-        <p class="fh-date"><?= e($tgl_indo_full) ?></p>
-    </div>
-    <div class="fh-actions">
-        <a href="<?= url('modules/warga/') ?>" class="fh-btn fh-btn-filled"><i class="fas fa-user-plus"></i>Tambah Warga</a>
-        <a href="<?= url('modules/keuangan/') ?>" class="fh-btn fh-btn-tonal"><i class="fas fa-wallet"></i>Catat Kas</a>
-        <a href="<?= url('modules/surat/') ?>" class="fh-btn fh-btn-tonal"><i class="fas fa-envelope-open-text"></i>Buat Surat</a>
-    </div>
-</div>
-
-<!-- ==================== KARTU STATISTIK ==================== -->
-<div class="grid grid-4">
-    <div class="card fh-reveal" style="--i:1">
-        <div class="fh-stat">
-            <div class="fh-ic g1"><i class="fas fa-users"></i></div>
-            <div class="fh-stat-body">
-                <h3>Total Warga</h3>
-                <div class="stat-num" data-count="<?= $total_warga ?>">0</div>
-                <div class="stat-sub">jiwa terdaftar</div>
+<div class="dash-grid">
+    <div>
+        <div class="dash-row2">
+            <div class="card dash-clock">
+                <div class="ck-ic"><i class="fa-regular fa-clock"></i></div>
+                <div>
+                    <h3>Waktu saat ini</h3>
+                    <div class="ck-time" id="dashClockTime">--:--:--</div>
+                    <div class="ck-sub"><?= e($tgl_indo_full) ?></div>
+                </div>
+            </div>
+            <div class="card dash-prog">
+                <h3>Progress iuran</h3>
+                <div class="pg-top"><span class="pg-num"><?= $iuran_persen ?>%</span></div>
+                <div class="pg-bar"><div class="pg-fill" style="width: <?= $iuran_persen ?>%"></div></div>
+                <div class="pg-sub"><?= $iuran_lunas ?> dari <?= $iuran_total ?> KK lunas &middot; <?= e($bulan_nama) ?> <?= e(date('Y')) ?></div>
             </div>
         </div>
-    </div>
-    <div class="card fh-reveal" style="--i:2">
-        <div class="fh-stat">
-            <div class="fh-ic g2"><i class="fas fa-house-user"></i></div>
-            <div class="fh-stat-body">
-                <h3>Kartu Keluarga</h3>
-                <div class="stat-num" data-count="<?= $total_kk ?>">0</div>
-                <div class="stat-sub">KK terdaftar</div>
-            </div>
-        </div>
-    </div>
-    <div class="card fh-reveal" style="--i:3">
-        <div class="fh-stat">
-            <div class="fh-ic g3"><i class="fas fa-wallet"></i></div>
-            <div class="fh-stat-body">
-                <h3>Saldo Kas RT</h3>
-                <div class="stat-rp"><?= e(rupiah($saldo)) ?></div>
-                <div class="stat-sub">kas saat ini</div>
-            </div>
-        </div>
-    </div>
-    <div class="card fh-reveal" style="--i:4">
-        <div class="fh-stat">
-            <div class="fh-ic g4"><i class="fas fa-hand-holding-dollar"></i></div>
-            <div class="fh-stat-body">
-                <h3>Iuran <?= e(periode_indo($periode_ini)) ?></h3>
-                <div class="stat-num" data-count="<?= $iuran_lunas ?>">0</div>
-                <div class="stat-sub">dari <?= $iuran_total ?> KK sudah lunas</div>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- ==================== GRAFIK ARUS KAS ==================== -->
-<h2 class="section-title fh-reveal" style="--i:5"><i class="fas fa-chart-column sec-ico"></i>Arus Kas</h2>
-<div class="grid grid-1">
-    <div class="card fh-reveal" style="--i:6">
-        <h3><i class="fas fa-chart-line card-ico"></i>Kas 6 Bulan Terakhir</h3>
-        <div class="fh-chart"><canvas id="chKas"></canvas></div>
-        <div class="fh-chart-legend">
-            <span><span class="fh-dot" style="background:#5EA332"></span>Pemasukan</span>
-            <span><span class="fh-dot" style="background:#E2574C"></span>Pengeluaran</span>
+        <div class="dash-sec">Ringkasan</div>
+        <div class="dash-stats">
+            <div class="card dash-stat">
+                <div class="st-ic c-blue"><i class="fa-solid fa-users"></i></div>
+                <div><div class="st-num"><?= number_format($total_warga) ?></div><div class="st-lbl">Total Warga</div></div>
+            </div>
+            <div class="card dash-stat">
+                <div class="st-ic c-green"><i class="fa-solid fa-house-user"></i></div>
+                <div><div class="st-num"><?= number_format($total_kk) ?></div><div class="st-lbl">Kepala Keluarga</div></div>
+            </div>
+            <div class="card dash-stat">
+                <div class="st-ic c-amber"><i class="fa-solid fa-wallet"></i></div>
+                <div><div class="st-num" style="font-size:20px;padding-top:4px"><?= e(rupiah($saldo)) ?></div><div class="st-lbl">Saldo Kas</div></div>
+            </div>
+            <div class="card dash-stat">
+                <div class="st-ic c-red"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                <div><div class="st-num"><?= $iuran_lunas ?>/<?= $iuran_total ?></div><div class="st-lbl">Iuran Lunas</div></div>
+            </div>
+        </div>
+
+        <?php if ($boleh_keuangan): ?>
+        <div class="dash-sec">Arus Kas</div>
+        <div class="card">
+            <h3><i class="fa-solid fa-chart-column card-ico"></i>Kas 6 bulan terakhir</h3>
+            <div class="dash-chart"><canvas id="kasChart"></canvas></div>
+            <div class="dash-legend">
+                <span><span class="dash-dot" style="background:#4F46E5"></span>Masuk</span>
+                <span><span class="dash-dot" style="background:#E5484D"></span>Keluar</span>
+            </div>
+        </div>
+        <?php endif; ?>
+
+        <div class="dash-sec">Aksi Cepat</div>
+        <div class="dash-quick">
+            <?php if ($boleh_warga): ?>
+            <a href="<?= url('modules/warga/') ?>"><span class="q-ic" style="color:#4F46E5"><i class="fa-solid fa-user-plus"></i></span>Kelola Warga</a>
+            <?php endif; ?>
+            <?php if ($boleh_keuangan): ?>
+            <a href="<?= url('modules/keuangan/') ?>"><span class="q-ic" style="color:#1C9A52"><i class="fa-solid fa-coins"></i></span>Catat Kas</a>
+            <?php endif; ?>
+            <?php if ($boleh_warga): ?>
+            <a href="<?= url('modules/surat/') ?>"><span class="q-ic" style="color:#C07E10"><i class="fa-solid fa-file-lines"></i></span>Buat Surat</a>
+            <?php endif; ?>
         </div>
     </div>
-</div>
 
-<!-- ==================== RINGKASAN ==================== -->
-<h2 class="section-title fh-reveal" style="--i:7"><i class="fas fa-clipboard-list sec-ico"></i>Ringkasan</h2>
-<div class="grid grid-2">
-    <div class="card fh-reveal" style="--i:8">
-        <h3><i class="fas fa-calendar-days card-ico"></i>Kegiatan Terdekat</h3>
-        <?php if (!$kegiatan): ?>
-            <div class="fh-empty">Belum ada kegiatan terjadwal.</div>
-        <?php else: ?>
-            <div class="fh-list">
-            <?php foreach ($kegiatan as $k): ?>
-                <div class="fh-item">
-                    <div class="fi-ic"><i class="fas fa-calendar-day"></i></div>
-                    <div class="fi-body">
-                        <div class="fi-title"><?= e($k['nama']) ?></div>
-                        <div class="fi-sub"><?= e(tgl_indo($k['tanggal'])) ?><?= $k['waktu'] ? ' &middot; ' . e($k['waktu']) : '' ?><?= $k['tempat'] ? ' &middot; ' . e($k['tempat']) : '' ?></div>
+    <div class="rail">
+        <div class="card dash-cal">
+            <h3><?= e($bulan_nama) ?> <?= e($cal_y) ?></h3>
+            <table>
+                <tr><?php foreach ($nama_hari_pendek as $h): ?><th><?= $h ?></th><?php endforeach; ?></tr>
+                <?php
+                $d = 1;
+                echo '<tr>';
+                for ($i = 0; $i < $cal_first; $i++) echo '<td class="dim"></td>';
+                while ($d <= $cal_days) {
+                    if (($cal_first + $d - 1) % 7 === 0 && $d > 1) echo '</tr><tr>';
+                    $cls = $d === $cal_today ? 'today' : '';
+                    echo '<td class="' . $cls . '"><span>' . $d . '</span></td>';
+                    $d++;
+                }
+                $sisa = (7 - (($cal_first + $cal_days) % 7)) % 7;
+                for ($i = 0; $i < $sisa; $i++) echo '<td class="dim"></td>';
+                echo '</tr>';
+                ?>
+            </table>
+        </div>
+
+        <?php if ($boleh_warga): ?>
+        <div class="card">
+            <h3><i class="fa-solid fa-calendar-days card-ico"></i>Kegiatan Terdekat</h3>
+            <?php if ($kegiatan): ?>
+            <div class="todo-list">
+                <?php foreach ($kegiatan as $k): ?>
+                <div class="todo-item">
+                    <span class="td-dot"></span>
+                    <div>
+                        <div class="td-title"><?= e($k['nama']) ?></div>
+                        <div class="td-sub"><?= e(tgl_indo($k['tanggal'])) ?><?= $k['waktu'] ? ' &middot; ' . e(substr($k['waktu'], 0, 5)) : '' ?><?= $k['tempat'] ? ' &middot; ' . e($k['tempat']) : '' ?></div>
                     </div>
                 </div>
-            <?php endforeach; ?>
+                <?php endforeach; ?>
             </div>
-        <?php endif; ?>
-    </div>
-    <div class="card fh-reveal" style="--i:9">
-        <h3><i class="fas fa-bullhorn card-ico"></i>Pengumuman Terbaru</h3>
-        <?php if (!$pengumuman): ?>
-            <div class="fh-empty">Belum ada pengumuman.</div>
-        <?php else: ?>
-            <div class="fh-list">
-            <?php foreach ($pengumuman as $p): ?>
-                <div class="fh-item">
-                    <div class="fi-ic"><i class="fas fa-bullhorn"></i></div>
-                    <div class="fi-body">
-                        <div class="fi-title"><?= e($p['judul']) ?></div>
-                        <div class="fi-sub"><?= e(tgl_indo($p['tanggal'])) ?> &middot; <?= e(mb_substr($p['isi'], 0, 80)) ?><?= mb_strlen($p['isi']) > 80 ? '&hellip;' : '' ?></div>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-            </div>
-        <?php endif; ?>
-    </div>
-</div>
-
-<div class="grid grid-2">
-    <div class="card fh-reveal" style="--i:10">
-        <h3><i class="fas fa-inbox card-ico"></i>Laporan Warga Terbaru
-            <?php if ($laporan_baru): ?><span class="badge-st baru"><?= $laporan_baru ?> baru</span><?php endif; ?>
-        </h3>
-        <?php if (!$laporan): ?>
-            <div class="fh-empty">Belum ada laporan.</div>
-        <?php else: ?>
-            <div class="fh-list">
-            <?php foreach ($laporan as $l): ?>
-                <div class="fh-item">
-                    <div class="fi-ic"><i class="fas fa-inbox"></i></div>
-                    <div class="fi-body">
-                        <div class="fi-title"><?= e($l['judul']) ?> <span class="badge-st <?= e($l['status']) ?>"><?= e(ucfirst($l['status'])) ?></span></div>
-                        <div class="fi-sub"><?= e($l['kategori']) ?> &middot; <?= e(tgl_indo($l['tanggal'])) ?></div>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-            </div>
-        <?php endif; ?>
-    </div>
-    <div class="card fh-reveal" style="--i:11">
-        <h3><i class="fas fa-bolt card-ico"></i>Aksi Cepat</h3>
-        <div class="fh-quick">
-            <a href="<?= url('modules/warga/') ?>"><i class="fas fa-users q-ic" style="color:#5EA332"></i>Warga<span>Kelola data warga</span></a>
-            <a href="<?= url('modules/keuangan/') ?>"><i class="fas fa-wallet q-ic" style="color:#D9A021"></i>Keuangan<span>Kas &amp; iuran</span></a>
-            <a href="<?= url('modules/surat/') ?>"><i class="fas fa-envelope-open-text q-ic" style="color:#4E9B6A"></i>Surat<span>Keterangan &amp; pengantar</span></a>
-            <a href="<?= url('modules/kegiatan/') ?>"><i class="fas fa-calendar-days q-ic" style="color:#7FBF5A"></i>Kegiatan<span>Agenda RT</span></a>
-            <a href="<?= url('modules/pengumuman/') ?>"><i class="fas fa-bullhorn q-ic" style="color:#E2574C"></i>Pengumuman<span>Info warga</span></a>
-            <a href="<?= url('modules/laporan/') ?>"><i class="fas fa-inbox q-ic" style="color:#1d5fb8"></i>Laporan<span>Aduan warga</span></a>
+            <?php else: ?>
+            <div class="dash-empty">Belum ada kegiatan terjadwal.</div>
+            <?php endif; ?>
         </div>
+
+        <div class="card">
+            <h3><i class="fa-solid fa-bullhorn card-ico"></i>Pengumuman</h3>
+            <?php if ($pengumuman): ?>
+            <div class="todo-list">
+                <?php foreach ($pengumuman as $p): ?>
+                <div class="todo-item">
+                    <span class="td-dot" style="background:#C07E10"></span>
+                    <div>
+                        <div class="td-title"><?= e($p['judul']) ?></div>
+                        <div class="td-sub"><?= e(tgl_indo($p['tanggal'])) ?></div>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+            <?php else: ?>
+            <div class="dash-empty">Belum ada pengumuman.</div>
+            <?php endif; ?>
+        </div>
+
+        <div class="card">
+            <h3><i class="fa-solid fa-inbox card-ico"></i>Laporan Warga
+                <?php if ($laporan_baru > 0): ?><span class="badge badge-warn" style="margin-left:8px"><?= $laporan_baru ?> baru</span><?php endif; ?>
+            </h3>
+            <?php if ($laporan): ?>
+            <div class="todo-list">
+                <?php foreach ($laporan as $l): ?>
+                <div class="todo-item">
+                    <span class="td-dot" style="background:<?= $l['status'] === 'baru' ? '#E5484D' : '#1C9A52' ?>"></span>
+                    <div>
+                        <div class="td-title"><?= e($l['judul']) ?></div>
+                        <div class="td-sub"><?= e(ucfirst($l['kategori'])) ?> &middot; <?= e(tgl_indo($l['tanggal'])) ?></div>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+            <?php else: ?>
+            <div class="dash-empty">Belum ada laporan.</div>
+            <?php endif; ?>
+        </div>
+        <?php endif; ?>
     </div>
 </div>
 
 <script>
 (function () {
-    var data = <?= $json_kas ?>;
+    // Jam live
+    var el = document.getElementById('dashClockTime');
+    function tick() {
+        var d = new Date();
+        var p = function (n) { return (n < 10 ? '0' : '') + n; };
+        el.textContent = p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+    }
+    tick(); setInterval(tick, 1000);
+
+    <?php if ($boleh_keuangan): ?>
+    // Grafik kas
     var dark = document.body.classList.contains('dark-mode');
-    var gridColor = dark ? 'rgba(255,255,255,.08)' : 'rgba(23,33,17,.08)';
-    var tickColor = dark ? '#B9C8A8' : '#5B6B52';
-    new Chart(document.getElementById('chKas'), {
+    var kd = <?= $json_kas ?>;
+    new Chart(document.getElementById('kasChart'), {
         type: 'bar',
         data: {
-            labels: data.label,
+            labels: kd.label,
             datasets: [
-                { label: 'Pemasukan', data: data.masuk, backgroundColor: '#5EA332', borderRadius: 6 },
-                { label: 'Pengeluaran', data: data.keluar, backgroundColor: '#E2574C', borderRadius: 6 }
+                { label: 'Masuk', data: kd.masuk, backgroundColor: '#4F46E5', borderRadius: 6, barPercentage: .6, categoryPercentage: .6 },
+                { label: 'Keluar', data: kd.keluar, backgroundColor: '#E5484D', borderRadius: 6, barPercentage: .6, categoryPercentage: .6 }
             ]
         },
         options: {
             responsive: true, maintainAspectRatio: false,
             plugins: { legend: { display: false } },
             scales: {
-                x: { grid: { display: false }, ticks: { color: tickColor, font: { weight: 600 } } },
-                y: { grid: { color: gridColor }, ticks: { color: tickColor, callback: function (v) { return v >= 1000 ? (v/1000) + 'rb' : v; } } }
+                x: { grid: { display: false }, ticks: { color: dark ? '#8E99B5' : '#6E7689', font: { size: 11 } } },
+                y: { grid: { color: dark ? '#232C47' : '#EDEFF4' }, ticks: { color: dark ? '#8E99B5' : '#6E7689', font: { size: 11 }, maxTicksLimit: 5 } }
             }
         }
     });
-    // Count-up angka statistik
-    document.querySelectorAll('[data-count]').forEach(function (el) {
-        var target = parseInt(el.getAttribute('data-count'), 10) || 0;
-        var t0 = null, dur = 900;
-        function step(ts) {
-            if (!t0) t0 = ts;
-            var p = Math.min((ts - t0) / dur, 1);
-            el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
-            if (p < 1) requestAnimationFrame(step);
-        }
-        requestAnimationFrame(step);
-    });
+    <?php endif; ?>
 })();
 </script>
 
