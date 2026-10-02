@@ -108,12 +108,13 @@ include __DIR__ . '/includes/header.php';
                 <?php if ($pengumuman): ?>
                 <div class="todo-list">
                     <?php foreach ($pengumuman as $p): ?>
-                    <div class="todo-item">
+                    <div class="todo-item pg-item" data-pjudul="<?= e($p['judul']) ?>" data-ptanggal="<?= e(tgl_indo($p['tanggal'])) ?>" data-pisi="<?= e($p['isi']) ?>" title="Klik untuk baca selengkapnya">
                         <span class="td-dot" style="background:#C07E10"></span>
                         <div>
                             <div class="td-title"><?= e($p['judul']) ?></div>
-                            <div class="td-sub"><?= e(tgl_indo($p['tanggal'])) ?></div>
+                            <div class="td-sub"><?= e(tgl_indo($p['tanggal'])) ?> &middot; klik untuk baca</div>
                         </div>
+                        <i class="fa-solid fa-chevron-right pg-arrow"></i>
                     </div>
                     <?php endforeach; ?>
                 </div>
@@ -269,7 +270,30 @@ include __DIR__ . '/includes/header.php';
     });
     } // end Chart guard
     <?php endif; ?>
+
+    // Popup isi pengumuman utuh (klik item di widget Pengumuman)
+    document.addEventListener('click', function (e) {
+        var it = e.target.closest('.pg-item');
+        if (!it || !window.snOpenModal) return;
+        document.getElementById('pgmJudul').textContent = it.getAttribute('data-pjudul') || '';
+        document.getElementById('pgmTanggal').textContent = it.getAttribute('data-ptanggal') || '';
+        document.getElementById('pgmIsi').textContent = it.getAttribute('data-pisi') || '';
+        window.snOpenModal(document.getElementById('modalPengumuman'));
+    });
 })();
 </script>
+
+<div class="sn-modal" id="modalPengumuman" role="dialog" aria-modal="true" aria-label="Isi Pengumuman">
+    <div class="sn-modal-box">
+        <div class="sn-modal-head">
+            <h3 id="pgmJudul"></h3>
+            <button type="button" class="sn-modal-close" data-snmodal-close aria-label="Tutup"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="sn-modal-body">
+            <div class="pgm-date"><i class="fa-solid fa-calendar-day"></i> <span id="pgmTanggal"></span></div>
+            <div class="pgm-isi" id="pgmIsi"></div>
+        </div>
+    </div>
+</div>
 
 <?php include __DIR__ . '/includes/footer.php'; ?>
