@@ -63,7 +63,10 @@ try { if (localStorage.getItem('santriDark') === '1') document.body.classList.ad
         <div class="side-user">
             <div class="side-user-name"><?= e($u ? $u['nama'] : '-') ?></div>
             <div class="side-user-role"><?= e($u ? role_label($u['role']) : '-') ?></div>
-            <a href="<?= url('logout.php') ?>" class="btn btn-sm btn-ghost">Keluar</a>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <a href="<?= url('profil.php') ?>" class="btn btn-sm"><i class="fas fa-user"></i>Profil Saya</a>
+                <a href="<?= url('logout.php') ?>" class="btn btn-sm btn-ghost">Keluar</a>
+            </div>
         </div>
         <div class="side-foot">
             <span class="side-ver"><i class="fas fa-code-branch"></i>v<?= e(APP_VERSION) ?></span>

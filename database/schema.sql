@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS users (
   username      VARCHAR(50) NOT NULL UNIQUE,
   password_hash VARCHAR(255) NOT NULL,
   nama_lengkap  VARCHAR(100) NOT NULL,
+  warga_id      INT UNSIGNED NULL COMMENT 'tautan ke warga.id (akun milik warga)',
   role          ENUM('admin','ketua','sekretaris','bendahara') NOT NULL DEFAULT 'sekretaris',
   aktif         TINYINT(1) NOT NULL DEFAULT 1,
   last_seen     TIMESTAMP NULL DEFAULT NULL,
@@ -142,3 +143,7 @@ CREATE TABLE IF NOT EXISTS laporan (
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   INDEX idx_laporan_status (status)
 ) ENGINE=InnoDB;
+
+-- Tautan akun -> warga (dijalankan setelah semua tabel dibuat)
+ALTER TABLE users
+  ADD CONSTRAINT fk_users_warga FOREIGN KEY (warga_id) REFERENCES warga(id) ON DELETE SET NULL;
