@@ -129,7 +129,17 @@ function asset_v($rel) {
 }
 
 function redirect($p = '') {
-    header('Location: ' . url($p));
+    $u = url($p);
+    header('Location: ' . $u);
+    /* Fallback: ada proxy/CDN yang menghilangkan header Location sehingga
+       browser hanya menampilkan halaman kosong. Body ini memastikan browser
+       tetap pindah walau header-nya hilang di tengah jalan. */
+    echo '<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8">'
+        . '<meta http-equiv="refresh" content="0;url=' . e($u) . '">'
+        . '<title>Mengalihkan...</title></head><body>'
+        . '<script>location.replace(' . json_encode($u) . ');</script>'
+        . '<p>Mengalihkan, klik <a href="' . e($u) . '">di sini</a> bila tidak berpindah otomatis.</p>'
+        . '</body></html>';
     exit;
 }
 
