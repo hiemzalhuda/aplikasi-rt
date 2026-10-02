@@ -71,7 +71,7 @@ $kegiatan = db_all($koneksi,
 
 // ---- Pengumuman aktif terbaru ----
 $pengumuman = db_all($koneksi,
-    'SELECT id, judul, isi, tanggal FROM pengumuman WHERE aktif = 1 ORDER BY tanggal DESC, id DESC LIMIT 3');
+    'SELECT id, judul, isi, tanggal FROM pengumuman WHERE aktif = 1 ORDER BY tanggal DESC, id DESC LIMIT 4');
 
 // ---- Laporan terbaru ----
 $laporan_baru = db_one($koneksi, "SELECT COUNT(*) AS c FROM laporan WHERE status = 'baru'");
@@ -103,23 +103,23 @@ include __DIR__ . '/includes/header.php';
 <div class="dash-grid">
     <div>
         <div class="dash-row2">
-            <div class="card dash-clock">
-                <div class="ck-main">
-                <svg class="ck-svg" viewBox="0 0 100 100" aria-hidden="true">
-                    <circle cx="50" cy="50" r="46" class="ck-face"/>
-                    <g id="ckTicks"></g>
-                    <line id="ckHour" x1="50" y1="50" x2="50" y2="30" class="ck-hand ck-hour"/>
-                    <line id="ckMin" x1="50" y1="50" x2="50" y2="20" class="ck-hand ck-min"/>
-                    <line id="ckSec" x1="50" y1="58" x2="50" y2="16" class="ck-hand ck-sec"/>
-                    <circle cx="50" cy="50" r="4" class="ck-pin"/>
-                </svg>
-                <div>
-                    <h3>Waktu saat ini</h3>
-                    <div class="ck-time" id="dashClockTime">--:--:--</div>
-                    <div class="ck-sub"><?= e($tgl_indo_full) ?></div>
+            <div class="card">
+                <h3><i class="fa-solid fa-bullhorn card-ico"></i>Pengumuman</h3>
+                <?php if ($pengumuman): ?>
+                <div class="todo-list">
+                    <?php foreach ($pengumuman as $p): ?>
+                    <div class="todo-item">
+                        <span class="td-dot" style="background:#C07E10"></span>
+                        <div>
+                            <div class="td-title"><?= e($p['judul']) ?></div>
+                            <div class="td-sub"><?= e(tgl_indo($p['tanggal'])) ?></div>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
                 </div>
-                </div>
-                <div class="ck-cap"><i class="fa-solid fa-house-user"></i><span>Sistem Manajemen RT 01 &middot; Perumahan Grand Harmoni 2, Balaraja</span></div>
+                <?php else: ?>
+                <div class="dash-empty">Belum ada pengumuman.</div>
+                <?php endif; ?>
             </div>
             <div class="card dash-prog">
                 <h3>Progress iuran</h3>
@@ -218,25 +218,6 @@ include __DIR__ . '/includes/header.php';
         </div>
 
         <div class="card">
-            <h3><i class="fa-solid fa-bullhorn card-ico"></i>Pengumuman</h3>
-            <?php if ($pengumuman): ?>
-            <div class="todo-list">
-                <?php foreach ($pengumuman as $p): ?>
-                <div class="todo-item">
-                    <span class="td-dot" style="background:#C07E10"></span>
-                    <div>
-                        <div class="td-title"><?= e($p['judul']) ?></div>
-                        <div class="td-sub"><?= e(tgl_indo($p['tanggal'])) ?></div>
-                    </div>
-                </div>
-                <?php endforeach; ?>
-            </div>
-            <?php else: ?>
-            <div class="dash-empty">Belum ada pengumuman.</div>
-            <?php endif; ?>
-        </div>
-
-        <div class="card">
             <h3><i class="fa-solid fa-inbox card-ico"></i>Laporan Warga
                 <?php if ($laporan_baru > 0): ?><span class="badge badge-warn" style="margin-left:8px"><?= $laporan_baru ?> baru</span><?php endif; ?>
             </h3>
@@ -263,42 +244,8 @@ include __DIR__ . '/includes/header.php';
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 (function () {
-    // Jam live: digital + jarum analog
-    var el = document.getElementById('dashClockTime');
-    var hH = document.getElementById('ckHour'),
-        hM = document.getElementById('ckMin'),
-        hS = document.getElementById('ckSec');
-    // Gambar strip menit jam analog sekali saja
-    (function drawTicks() {
-        var g = document.getElementById('ckTicks');
-        if (!g) return;
-        var ns = 'http://www.w3.org/2000/svg', s = '';
-        for (var i = 0; i < 60; i++) {
-            var a = i * 6 * Math.PI / 180, major = i % 5 === 0;
-            var r1 = major ? 38 : 41, r2 = 44;
-            var x1 = 50 + r1 * Math.sin(a), y1 = 50 - r1 * Math.cos(a);
-            var x2 = 50 + r2 * Math.sin(a), y2 = 50 - r2 * Math.cos(a);
-            s += '<line x1="' + x1.toFixed(1) + '" y1="' + y1.toFixed(1) +
-                 '" x2="' + x2.toFixed(1) + '" y2="' + y2.toFixed(1) +
-                 '" class="ck-tick' + (major ? ' major' : '') + '"/>';
-        }
-        g.innerHTML = s;
-    })();
-    function tick() {
-        var d = new Date();
-        var p = function (n) { return (n < 10 ? '0' : '') + n; };
-        el.textContent = p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
-        var sec = d.getSeconds() + d.getMilliseconds() / 1000;
-        var min = d.getMinutes() + sec / 60;
-        var hr = (d.getHours() % 12) + min / 60;
-        if (hS) hS.setAttribute('transform', 'rotate(' + (sec * 6) + ' 50 50)');
-        if (hM) hM.setAttribute('transform', 'rotate(' + (min * 6) + ' 50 50)');
-        if (hH) hH.setAttribute('transform', 'rotate(' + (hr * 30) + ' 50 50)');
-    }
-    tick(); setInterval(tick, 200);
-
     <?php if ($boleh_keuangan): ?>
-    // Grafik kas (guard: CDN boleh gagal tanpa merusak jam)
+    // Grafik kas (guard: CDN boleh gagal tanpa merusak halaman)
     if (typeof Chart !== 'undefined') {
     var dark = document.body.classList.contains('dark-mode');
     var kd = <?= $json_kas ?>;
