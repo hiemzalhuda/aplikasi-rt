@@ -94,6 +94,19 @@ $role = $user['role'] ?? '';
 $boleh_keuangan = in_array($role, array('admin', 'ketua', 'bendahara'), true);
 $boleh_warga = in_array($role, array('admin', 'ketua', 'sekretaris'), true);
 
+// Link kartu statistik: jadi <a> bila role boleh membuka modul tujuannya
+function dash_stat_open($href) {
+    if ($href !== '') return '<a href="' . e($href) . '" class="card dash-stat stat-link">';
+    return '<div class="card dash-stat">';
+}
+function dash_stat_close($href) { return $href !== '' ? '</a>' : '</div>'; }
+$href_warga = $boleh_warga ? url('modules/warga/') : '';
+$href_kas   = $boleh_keuangan ? url('modules/keuangan/') : '';
+$href_iuran = $boleh_keuangan ? url('modules/keuangan/?tab=iuran') : '';
+$href_keg   = $boleh_warga ? url('modules/kegiatan/') : '';
+$href_lap   = $boleh_warga ? url('modules/laporan/') : '';
+$href_pgm   = $boleh_warga ? url('modules/pengumuman/') : '';
+
 include __DIR__ . '/includes/header.php';
 ?>
 
@@ -104,7 +117,7 @@ include __DIR__ . '/includes/header.php';
     <div>
         <div class="dash-row2">
             <div class="card">
-                <h3><i class="fa-solid fa-bullhorn card-ico"></i>Pengumuman</h3>
+                <h3 class="card-head"><span><i class="fa-solid fa-bullhorn card-ico"></i>Pengumuman</span><?php if ($href_pgm): ?><a class="card-more" href="<?= e($href_pgm) ?>">Lihat semua <i class="fa-solid fa-arrow-right"></i></a><?php endif; ?></h3>
                 <?php if ($pengumuman): ?>
                 <div class="todo-list">
                     <?php foreach ($pengumuman as $p): ?>
@@ -123,7 +136,7 @@ include __DIR__ . '/includes/header.php';
                 <?php endif; ?>
             </div>
             <div class="card dash-prog">
-                <h3>Progress iuran</h3>
+                <h3 class="card-head"><span>Progress iuran</span><?php if ($href_iuran): ?><a class="card-more" href="<?= e($href_iuran) ?>">Lihat semua <i class="fa-solid fa-arrow-right"></i></a><?php endif; ?></h3>
                 <div class="pg-top"><span class="pg-num"><?= $iuran_persen ?>%</span></div>
                 <div class="pg-bar"><div class="pg-fill" style="width: <?= $iuran_persen ?>%"></div></div>
                 <div class="pg-sub"><?= $iuran_lunas ?> dari <?= $iuran_total ?> KK lunas &middot; <?= e($bulan_nama) ?> <?= e(date('Y')) ?></div>
@@ -132,28 +145,32 @@ include __DIR__ . '/includes/header.php';
 
         <div class="dash-sec">Ringkasan</div>
         <div class="dash-stats">
-            <div class="card dash-stat">
+            <?= dash_stat_open($href_warga) ?>
                 <div class="st-ic c-blue"><i class="fa-solid fa-users"></i></div>
                 <div><div class="st-num"><?= number_format($total_warga) ?></div><div class="st-lbl">Total Warga</div></div>
-            </div>
-            <div class="card dash-stat">
+                <?php if ($href_warga): ?><i class="fa-solid fa-chevron-right stat-arrow"></i><?php endif; ?>
+            <?= dash_stat_close($href_warga) ?>
+            <?= dash_stat_open($href_warga) ?>
                 <div class="st-ic c-green"><i class="fa-solid fa-house-user"></i></div>
                 <div><div class="st-num"><?= number_format($total_kk) ?></div><div class="st-lbl">Kepala Keluarga</div></div>
-            </div>
-            <div class="card dash-stat">
+                <?php if ($href_warga): ?><i class="fa-solid fa-chevron-right stat-arrow"></i><?php endif; ?>
+            <?= dash_stat_close($href_warga) ?>
+            <?= dash_stat_open($href_kas) ?>
                 <div class="st-ic c-amber"><i class="fa-solid fa-wallet"></i></div>
                 <div><div class="st-num" style="font-size:20px;padding-top:4px"><?= e(rupiah($saldo)) ?></div><div class="st-lbl">Saldo Kas</div></div>
-            </div>
-            <div class="card dash-stat">
+                <?php if ($href_kas): ?><i class="fa-solid fa-chevron-right stat-arrow"></i><?php endif; ?>
+            <?= dash_stat_close($href_kas) ?>
+            <?= dash_stat_open($href_iuran) ?>
                 <div class="st-ic c-red"><i class="fa-solid fa-hand-holding-dollar"></i></div>
                 <div><div class="st-num"><?= $iuran_lunas ?>/<?= $iuran_total ?></div><div class="st-lbl">Iuran Lunas</div></div>
-            </div>
+                <?php if ($href_iuran): ?><i class="fa-solid fa-chevron-right stat-arrow"></i><?php endif; ?>
+            <?= dash_stat_close($href_iuran) ?>
         </div>
 
         <?php if ($boleh_keuangan): ?>
         <div class="dash-sec">Arus Kas</div>
         <div class="card">
-            <h3><i class="fa-solid fa-chart-column card-ico"></i>Kas 6 bulan terakhir</h3>
+            <h3 class="card-head"><span><i class="fa-solid fa-chart-column card-ico"></i>Kas 6 bulan terakhir</span><?php if ($href_kas): ?><a class="card-more" href="<?= e($href_kas) ?>">Lihat semua <i class="fa-solid fa-arrow-right"></i></a><?php endif; ?></h3>
             <div class="dash-chart"><canvas id="kasChart"></canvas></div>
             <div class="dash-legend">
                 <span><span class="dash-dot" style="background:#4F46E5"></span>Masuk</span>
@@ -200,7 +217,7 @@ include __DIR__ . '/includes/header.php';
 
         <?php if ($boleh_warga): ?>
         <div class="card">
-            <h3><i class="fa-solid fa-calendar-days card-ico"></i>Kegiatan Terdekat</h3>
+            <h3 class="card-head"><span><i class="fa-solid fa-calendar-days card-ico"></i>Kegiatan Terdekat</span><?php if ($href_keg): ?><a class="card-more" href="<?= e($href_keg) ?>">Lihat semua <i class="fa-solid fa-arrow-right"></i></a><?php endif; ?></h3>
             <?php if ($kegiatan): ?>
             <div class="todo-list">
                 <?php foreach ($kegiatan as $k): ?>
@@ -219,8 +236,8 @@ include __DIR__ . '/includes/header.php';
         </div>
 
         <div class="card">
-            <h3><i class="fa-solid fa-inbox card-ico"></i>Laporan Warga
-                <?php if ($laporan_baru > 0): ?><span class="badge badge-warn" style="margin-left:8px"><?= $laporan_baru ?> baru</span><?php endif; ?>
+            <h3 class="card-head"><span><i class="fa-solid fa-inbox card-ico"></i>Laporan Warga
+                <?php if ($laporan_baru > 0): ?><span class="badge badge-warn" style="margin-left:8px"><?= $laporan_baru ?> baru</span><?php endif; ?></span><?php if ($href_lap): ?><a class="card-more" href="<?= e($href_lap) ?>">Lihat semua <i class="fa-solid fa-arrow-right"></i></a><?php endif; ?>
             </h3>
             <?php if ($laporan): ?>
             <div class="todo-list">
