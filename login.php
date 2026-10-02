@@ -14,6 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $row = db_one($koneksi, 'SELECT * FROM users WHERE username = ? AND aktif = 1 LIMIT 1', 's', array($username));
     if ($row && password_verify($password, $row['password_hash'])) {
         login_user($row);
+        session_regenerate_id(true); // cegah session fixation (penting utk sesi via URL)
         redirect('index.php');
     }
     $error = 'Username atau password salah.';

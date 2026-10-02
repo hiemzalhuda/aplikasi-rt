@@ -2,6 +2,15 @@
 /**
  * Autentikasi session + proteksi role.
  */
+/* Sesi tahan proxy: cookie sesi kadang di-strip di jalur Cloudflare,
+   jadi izinkan ID sesi lewat URL sebagai cadangan (trans_sid). Cookie
+   tetap diutamakan; URL hanya dipakai bila klien tidak membawa cookie. */
+ini_set('session.use_cookies', '1');
+ini_set('session.use_only_cookies', '0');
+ini_set('session.use_trans_sid', '1');
+ini_set('session.use_strict_mode', '1');
+/* Jangan bocorkan URL (yang bisa berisi ID sesi) via Referer ke CDN. */
+header('Referrer-Policy: no-referrer');
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }

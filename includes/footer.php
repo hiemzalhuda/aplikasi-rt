@@ -213,7 +213,7 @@
 /* ================= AUTOCOMPLETE PENCARIAN WARGA ================= */
 (function () {
     var wargaBase = <?= json_encode(url('modules/warga/')) ?>;
-    var cariUrl = <?= json_encode(url('modules/warga/cari.php')) ?>;
+    var cariUrl = <?= json_encode(url('modules/warga/cari.php') . ((session_id() !== '' && isset($_GET[session_name()])) ? '?' . urlencode(session_name()) . '=' . urlencode(session_id()) : '')) ?>;
 
     function esc(s) {
         return String(s).replace(/[&<>"']/g, function (c) {
@@ -247,7 +247,7 @@
             clearTimeout(timer);
             if (q.length < 2) { closeBox(); return; }
             timer = setTimeout(function () {
-                fetch(cariUrl + '?q=' + encodeURIComponent(q), { headers: { 'Accept': 'application/json' } })
+                fetch(cariUrl + (cariUrl.indexOf('?') === -1 ? '?q=' : '&q=') + encodeURIComponent(q), { headers: { 'Accept': 'application/json' } })
                     .then(function (r) { return r.ok ? r.json() : []; })
                     .then(render)
                     .catch(function () { closeBox(); });

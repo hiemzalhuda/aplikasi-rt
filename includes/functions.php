@@ -130,6 +130,12 @@ function asset_v($rel) {
 
 function redirect($p = '') {
     $u = url($p);
+    /* Bila klien memakai sesi via URL (cookie di-strip di tengah jalan),
+       teruskan ID sesi agar tetap login setelah pindah halaman. */
+    if (session_id() !== '' && isset($_GET[session_name()])) {
+        $u .= (strpos($u, '?') === false ? '?' : '&')
+            . urlencode(session_name()) . '=' . urlencode(session_id());
+    }
     header('Location: ' . $u);
     /* Fallback: ada proxy/CDN yang menghilangkan header Location sehingga
        browser hanya menampilkan halaman kosong. Body ini memastikan browser
