@@ -7,8 +7,8 @@ $me = require_login(array('admin'));
 $title = 'Manajemen Pengguna';
 $menu = 'users';
 
-$roles_valid = array('admin', 'pengasuh', 'keuangan', 'wali');
-$role_label  = array('admin' => 'Admin', 'pengasuh' => 'Pengasuh', 'keuangan' => 'Keuangan', 'wali' => 'Wali');
+$roles_valid = array('admin', 'ketua', 'sekretaris', 'bendahara');
+$role_label  = array('admin' => 'Admin', 'ketua' => 'Ketua RT', 'sekretaris' => 'Sekretaris', 'bendahara' => 'Bendahara');
 
 function last_admin_guard($db, $target_id) {
     // True jika $target_id adalah satu-satunya admin aktif -> aksi dilarang.
@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $username = trim($_POST['username'] ?? '');
         $nama     = trim($_POST['nama_lengkap'] ?? '');
         $password = $_POST['password'] ?? '';
-        $role     = $_POST['role'] ?? 'pengasuh';
+        $role     = $_POST['role'] ?? 'sekretaris';
         $aktif    = isset($_POST['aktif']) ? 1 : 0;
         if (!valid_username($username)) {
             flash_set('Username 3-30 karakter: huruf, angka, titik, strip, underscore.', 'err');
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($aksi === 'simpan_edit') {
         $id    = (int) ($_POST['id'] ?? 0);
         $nama  = trim($_POST['nama_lengkap'] ?? '');
-        $role  = $_POST['role'] ?? 'pengasuh';
+        $role  = $_POST['role'] ?? 'sekretaris';
         $aktif = isset($_POST['aktif']) ? 1 : 0;
         $row = db_one($koneksi, 'SELECT * FROM users WHERE id = ? LIMIT 1', 'i', array($id));
         if (!$row) {
@@ -115,7 +115,7 @@ if (isset($_GET['edit'])) {
     $reset_row = db_one($koneksi, 'SELECT id, username, nama_lengkap FROM users WHERE id = ? LIMIT 1', 'i', array((int) $_GET['reset']));
 }
 
-$rows = db_all($koneksi, 'SELECT id, username, nama_lengkap, role, aktif, created_at FROM users ORDER BY FIELD(role, "admin", "pengasuh", "keuangan", "wali"), username ASC');
+$rows = db_all($koneksi, 'SELECT id, username, nama_lengkap, role, aktif, created_at FROM users ORDER BY FIELD(role, "admin", "ketua", "sekretaris", "bendahara"), username ASC');
 
 include __DIR__ . '/../../includes/header.php';
 ?>

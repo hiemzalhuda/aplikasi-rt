@@ -1,6 +1,6 @@
         </div><!-- /.content -->
         <footer class="footer">
-            <?= e(defined('APP_FULL') ? APP_FULL : 'Pondok Pesantren') ?> &mdash; Sistem Informasi Santri
+            <?= e(defined('APP_FULL') ? APP_FULL : 'Sistem Informasi RT') ?> &mdash; v<?= e(defined('APP_VERSION') ? APP_VERSION : '') ?>
         </footer>
     </main>
 </div>
@@ -210,10 +210,10 @@
     });
 })();
 
-/* ================= AUTOCOMPLETE PENCARIAN SANTRI ================= */
+/* ================= AUTOCOMPLETE PENCARIAN WARGA ================= */
 (function () {
-    var profilBase = <?= json_encode(url('modules/santri/profil.php')) ?>;
-    var cariUrl = <?= json_encode(url('modules/santri/cari.php')) ?>;
+    var wargaBase = <?= json_encode(url('modules/warga/')) ?>;
+    var cariUrl = <?= json_encode(url('modules/warga/cari.php')) ?>;
 
     function esc(s) {
         return String(s).replace(/[&<>"']/g, function (c) {
@@ -232,12 +232,12 @@
         function closeBox() { box.classList.remove('open'); box.innerHTML = ''; }
         function render(items) {
             if (!items.length) {
-                box.innerHTML = '<div class="sr-empty">Santri tidak ditemukan. Tekan Enter untuk pencarian penuh.</div>';
+                box.innerHTML = '<div class="sr-empty">Warga tidak ditemukan. Tekan Enter untuk pencarian penuh.</div>';
             } else {
                 box.innerHTML = items.map(function (it) {
-                    return '<a href="' + profilBase + '?id=' + it.id + '" data-no-transition>' +
+                    return '<a href="' + wargaBase + '?q=' + encodeURIComponent(it.nama) + '" data-no-transition>' +
                         '<div class="sr-nama">' + esc(it.nama) + '</div>' +
-                        '<div class="sr-nis">NIS: ' + esc(it.nis) + '</div></a>';
+                        '<div class="sr-nis">NIK: ' + esc(it.nik) + '</div></a>';
                 }).join('');
             }
             box.classList.add('open');
@@ -260,26 +260,27 @@
     snAutocomplete('snGlobalSearch', 'snGlobalSearchInput', 'snGlobalSearchResults'); // header
 })();
 
-/* ============ FILTER LIVE DAFTAR SANTRI (ketik -> tabel menyesuaikan) ============ */
+/* ============ FILTER LIVE DAFTAR WARGA (ketik -> tabel menyesuaikan) ============
+   Baris tabel memakai atribut data-search berisi teks yg bisa dicari. */
 (function () {
     var input = document.getElementById('snPageSearchInput');
-    var tbody = document.getElementById('snSantriBody');
+    var tbody = document.getElementById('snWargaBody');
     if (!input || !tbody) return;
     var timer = null;
     var emptyRow = null;
 
     function hasQueryQ() { return new URLSearchParams(location.search).has('q'); }
 
-    /** Teks yg dicari: kolom NIS (0), Nama (1), Alamat (4). */
     function rowText(tr) {
-        var c = tr.cells;
-        if (!c || c.length < 5) return '';
-        return (c[0].textContent + ' ' + c[1].textContent + ' ' + c[4].textContent).toLowerCase();
+        var d = tr.getAttribute('data-search');
+        if (d) return d.toLowerCase();
+        return tr.textContent.toLowerCase();
     }
     function toggleEmpty(show) {
         if (show && !emptyRow) {
             emptyRow = document.createElement('tr');
-            emptyRow.innerHTML = '<td colspan="8" class="empty">Tidak ada santri yang cocok dengan pencarian.</td>';
+            var n = tbody.querySelector('tr') ? tbody.querySelector('tr').cells.length : 6;
+            emptyRow.innerHTML = '<td colspan="' + n + '" class="empty">Tidak ada warga yang cocok dengan pencarian.</td>';
             tbody.appendChild(emptyRow);
         }
         if (emptyRow) emptyRow.style.display = show ? '' : 'none';
@@ -303,6 +304,12 @@
         });
         toggleEmpty(visible === 0);
     }
+    // Jika datang dengan ?q= (mis. dari autocomplete header), langsung filter
+    if (hasQueryQ() && input.value.trim() === '') {
+        var qp = new URLSearchParams(location.search).get('q') || '';
+        input.value = qp;
+    }
+    applyFilter();
     input.addEventListener('input', function () {
         clearTimeout(timer);
         timer = setTimeout(applyFilter, 150);

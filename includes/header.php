@@ -6,14 +6,13 @@
 if (!isset($title)) $title = 'Dashboard';
 if (!isset($menu)) $menu = 'dashboard';
 $nav = array(
-    'dashboard'   => array('Dashboard',   '',                    'fa-solid fa-house'),
-    'santri'      => array('Santri',      'modules/santri/',     'fa-solid fa-users'),
-    'asrama'      => array('Asrama',      'modules/asrama/',     'fa-solid fa-bed'),
-    'kehadiran'   => array('Kehadiran',   'modules/kehadiran/',  'fa-solid fa-clipboard-check'),
-    'hafalan'     => array('Hafalan',     'modules/hafalan/',    'fa-solid fa-book-quran'),
-    'nilai'       => array('Nilai',       'modules/nilai/',      'fa-solid fa-award'),
-    'keuangan'    => array('Keuangan',    'modules/keuangan/',   'fa-solid fa-wallet'),
-    'pelanggaran' => array('Pelanggaran', 'modules/pelanggaran/','fa-solid fa-triangle-exclamation'),
+    'dashboard'   => array('Dashboard',   '',                     'fa-solid fa-house'),
+    'warga'       => array('Warga',       'modules/warga/',       'fa-solid fa-users'),
+    'keuangan'    => array('Keuangan',    'modules/keuangan/',    'fa-solid fa-wallet'),
+    'surat'       => array('Surat',       'modules/surat/',       'fa-solid fa-envelope-open-text'),
+    'kegiatan'    => array('Kegiatan',    'modules/kegiatan/',    'fa-solid fa-calendar-days'),
+    'pengumuman'  => array('Pengumuman',  'modules/pengumuman/',  'fa-solid fa-bullhorn'),
+    'laporan'     => array('Laporan',     'modules/laporan/',     'fa-solid fa-inbox'),
 );
 $u = current_user();
 // Menu manajemen pengguna hanya untuk admin
@@ -32,7 +31,7 @@ if ($u && isset($koneksi)) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title><?= e($title) ?> &mdash; <?= e(defined('APP_FULL') ? APP_FULL : 'Pondok Pesantren') ?></title>
+<title><?= e($title) ?> &mdash; <?= e(defined('APP_FULL') ? APP_FULL : 'Sistem Informasi RT') ?></title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -47,10 +46,10 @@ try { if (localStorage.getItem('santriDark') === '1') document.body.classList.ad
 <div class="app">
     <aside class="sidebar">
         <div class="brand">
-            <div class="brand-logo">F</div>
+            <div class="brand-logo">R</div>
             <div>
-                <div class="brand-name"><?= e(defined('APP_NAME') ? APP_NAME : 'Fath Darut Tafsir') ?></div>
-                <div class="brand-sub">Pondok Pesantren</div>
+                <div class="brand-name"><?= e(defined('APP_NAME') ? APP_NAME : 'SI-RT') ?></div>
+                <div class="brand-sub">RT <?= e(defined('RT_NO') ? RT_NO : '-') ?> / RW <?= e(defined('RW_NO') ? RW_NO : '-') ?></div>
             </div>
         </div>
         <nav class="nav">
@@ -62,7 +61,7 @@ try { if (localStorage.getItem('santriDark') === '1') document.body.classList.ad
         </nav>
         <div class="side-user">
             <div class="side-user-name"><?= e($u ? $u['nama'] : '-') ?></div>
-            <div class="side-user-role"><?= e($u ? $u['role'] : '-') ?></div>
+            <div class="side-user-role"><?= e($u ? role_label($u['role']) : '-') ?></div>
             <a href="<?= url('logout.php') ?>" class="btn btn-sm btn-ghost">Keluar</a>
         </div>
         <div class="side-foot">
@@ -76,10 +75,10 @@ try { if (localStorage.getItem('santriDark') === '1') document.body.classList.ad
             <button class="icon-btn sn-menu-btn" id="snMenuBtn" title="Menu" aria-label="Menu"><i class="fas fa-bars"></i></button>
             <h1><?= e($title) ?></h1>
             <div class="sn-search" id="snGlobalSearch">
-                <form method="get" action="<?= url('modules/santri/') ?>" role="search" autocomplete="off">
+                <form method="get" action="<?= url('modules/warga/') ?>" role="search" autocomplete="off">
                     <span class="sn-search-icon"><i class="fas fa-search"></i></span>
                     <input type="text" name="q" id="snGlobalSearchInput" class="sn-search-input"
-                           placeholder="Cari santri (nama/NIS)..." autocomplete="off" aria-label="Cari santri">
+                           placeholder="Cari warga (nama/NIK)..." autocomplete="off" aria-label="Cari warga">
                 </form>
                 <div class="sn-search-results" id="snGlobalSearchResults"></div>
             </div>

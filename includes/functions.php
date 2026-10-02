@@ -3,11 +3,83 @@
  * Helper umum: escaping, URL, redirect, query DB, format tanggal.
  */
 
-/** Branding pondok pesantren */
-if (!defined('APP_NAME')) define('APP_NAME', 'Fath Darut Tafsir');
-if (!defined('APP_FULL')) define('APP_FULL', 'Pondok Pesantren Fath Darut Tafsir');
+/** Branding Sistem Informasi RT */
+if (!defined('APP_NAME')) define('APP_NAME', 'SI-RT');
+if (!defined('APP_FULL')) define('APP_FULL', 'Sistem Informasi RT');
+/** Identitas wilayah (ubah sesuai RT/RW setempat) */
+if (!defined('RT_NO')) define('RT_NO', '001');
+if (!defined('RW_NO')) define('RW_NO', '001');
 /** Versi aplikasi (tampil di footer sidebar) */
-if (!defined('APP_VERSION')) define('APP_VERSION', '1.4.0');
+if (!defined('APP_VERSION')) define('APP_VERSION', '2.0.0');
+/** Nominal iuran bulanan default per KK (Rp) */
+if (!defined('IURAN_DEFAULT')) define('IURAN_DEFAULT', 20000);
+
+/** Daftar jenis surat + kode singkat untuk penomoran. */
+function surat_jenis_list() {
+    return array(
+        'Keterangan Domisili'  => 'DOM',
+        'Pengantar KTP'        => 'KTP',
+        'Pengantar Kartu Keluarga' => 'KK',
+        'Pengantar SKCK'       => 'SKCK',
+        'Keterangan Kelahiran' => 'LAHIR',
+        'Keterangan Kematian'  => 'MATI',
+        'Keterangan Pindah'    => 'PINDAH',
+        'Keterangan Usaha'     => 'USAHA',
+        'Keterangan Tidak Mampu' => 'TM',
+        'Lainnya'              => 'LAIN',
+    );
+}
+
+/** Nomor surat berikutnya: 001/DOM/RT.001/RW.001/X/2026 */
+function nomor_surat_berikutnya($db, $jenis) {
+    $map = surat_jenis_list();
+    $kode = isset($map[$jenis]) ? $map[$jenis] : 'LAIN';
+    $tahun = date('Y');
+    $bln_romawi = array(1=>'I',2=>'II',3=>'III',4=>'IV',5=>'V',6=>'VI',7=>'VII',8=>'VIII',9=>'IX',10=>'X',11=>'XI',12=>'XII');
+    $r = db_one($db, 'SELECT COUNT(*) AS c FROM surat WHERE YEAR(tgl_terbit) = ?', 's', array($tahun));
+    $seq = $r ? ((int) $r['c'] + 1) : 1;
+    return sprintf('%03d', $seq) . '/' . $kode . '/RT.' . RT_NO . '/RW.' . RW_NO . '/'
+        . $bln_romawi[(int) date('n')] . '/' . $tahun;
+}
+
+/** Nama warga dari id (untuk relasi surat/laporan). */
+function warga_nama($db, $id) {
+    if (!$id) return '-';
+    $r = db_one($db, 'SELECT nama FROM warga WHERE id = ?', 'i', array((int) $id));
+    return $r ? $r['nama'] : '-';
+}
+
+/** Nama kepala keluarga dari no KK. */
+function kk_kepala($db, $no_kk) {
+    $r = db_one($db, "SELECT nama FROM warga WHERE no_kk = ? AND hubungan = 'KEPALA KELUARGA' LIMIT 1",
+        's', array($no_kk));
+    if (!$r) $r = db_one($db, 'SELECT nama FROM warga WHERE no_kk = ? ORDER BY id ASC LIMIT 1',
+        's', array($no_kk));
+    return $r ? $r['nama'] : '-';
+}
+
+/** Saldo kas RT = total masuk - total keluar. */
+function saldo_kas($db) {
+    $m = db_one($db, "SELECT COALESCE(SUM(jumlah),0) AS s FROM kas_transaksi WHERE jenis = 'masuk'");
+    $k = db_one($db, "SELECT COALESCE(SUM(jumlah),0) AS s FROM kas_transaksi WHERE jenis = 'keluar'");
+    return (int) ($m['s'] ?? 0) - (int) ($k['s'] ?? 0);
+}
+
+/** '2026-10' -> 'Oktober 2026'. */
+function periode_indo($periode) {
+    $bulan = array(1=>'Januari',2=>'Februari',3=>'Maret',4=>'April',5=>'Mei',6=>'Juni',
+        7=>'Juli',8=>'Agustus',9=>'September',10=>'Oktober',11=>'November',12=>'Desember');
+    if (!preg_match('/^(\d{4})-(\d{2})$/', (string) $periode, $m)) return (string) $periode;
+    $b = (int) $m[2];
+    return ($bulan[$b] ?? $m[2]) . ' ' . $m[1];
+}
+
+/** Label tampilan role pengguna. */
+function role_label($r) {
+    $map = array('admin' => 'Admin', 'ketua' => 'Ketua RT',
+        'sekretaris' => 'Sekretaris', 'bendahara' => 'Bendahara');
+    return $map[$r] ?? ucfirst((string) $r);
+}
 
 function e($s) {
     return htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8');
@@ -91,25 +163,6 @@ function tgl_indo($date) {
     return date('d', $t) . ' ' . $bulan[(int) date('n', $t)] . ' ' . date('Y', $t);
 }
 
-/** Link nama santri ke halaman profil. */
-function profil_link($id, $label) {
-    return '<a class="tbl-link" href="' . e(url('modules/santri/profil.php?id=' . (int) $id)) . '">' . e($label) . '</a>';
-}
-
-/** Durasi "X tahun Y bulan Z hari" dari tanggal masuk sampai hari ini. */
-function lama_santri($tgl_masuk) {
-    if (!$tgl_masuk) return '-';
-    try { $a = new DateTime($tgl_masuk); } catch (Exception $e) { return '-'; }
-    $b = new DateTime(date('Y-m-d'));
-    if ($a > $b) return '0 hari';
-    $d = $a->diff($b);
-    $parts = array();
-    if ($d->y) $parts[] = $d->y . ' tahun';
-    if ($d->m) $parts[] = $d->m . ' bulan';
-    if ($d->d || !$parts) $parts[] = $d->d . ' hari';
-    return implode(' ', $parts);
-}
-
 function rupiah($n) {
     return 'Rp ' . number_format((int) $n, 0, ',', '.');
 }
@@ -124,33 +177,4 @@ function flash_get() {
     unset($_SESSION['flash']);
     $cls = $f['type'] === 'err' ? 'alert-err' : 'alert-ok';
     return '<div class="alert ' . $cls . '">' . e($f['msg']) . '</div>';
-}
-
-/** Validasi nama file foto yg tersimpan di DB (anti path traversal). */
-function foto_ok($f) {
-    return $f && preg_match('/^[A-Za-z0-9._-]+$/', $f);
-}
-
-/** Proses upload foto santri baru; return array(nama_file, pesan_error). */
-function upload_foto_santri($file, $old, $upload_dir) {
-    if (empty($file['name'])) return array($old, null);
-    if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
-        return array($old, 'Upload foto gagal.');
-    }
-    $allowed = array('jpg' => 1, 'jpeg' => 1, 'png' => 1, 'webp' => 1);
-    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-    if (!isset($allowed[$ext])) return array($old, 'Format foto harus jpg, png, atau webp.');
-    if ($file['size'] > 2 * 1024 * 1024) return array($old, 'Ukuran foto maksimal 2 MB.');
-    if (!@getimagesize($file['tmp_name'])) return array($old, 'File bukan gambar yang valid.');
-    if (!is_dir($upload_dir) && !@mkdir($upload_dir, 0775, true)) {
-        return array($old, 'Direktori upload tidak tersedia.');
-    }
-    $name = 'santri-' . bin2hex(random_bytes(8)) . '.' . $ext;
-    if (!@move_uploaded_file($file['tmp_name'], $upload_dir . '/' . $name)) {
-        return array($old, 'Gagal menyimpan foto.');
-    }
-    if (foto_ok($old) && $old !== $name && file_exists($upload_dir . '/' . $old)) {
-        @unlink($upload_dir . '/' . $old);
-    }
-    return array($name, null);
 }

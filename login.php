@@ -43,14 +43,14 @@ try { if (localStorage.getItem('santriDark') === '1') document.body.classList.ad
     <div class="sn-login" id="snCard">
         <div class="sn-winbar">
             <span class="sn-dot sn-dot-r"></span><span class="sn-dot sn-dot-y"></span><span class="sn-dot sn-dot-g"></span>
-            <span class="sn-sysid">SANTRI&nbsp;&middot;&nbsp;LOGIN</span>
+            <span class="sn-sysid">SI-RT&nbsp;&middot;&nbsp;LOGIN</span>
             <button type="button" class="sn-dark-btn" id="snDarkToggle" aria-label="Toggle dark mode">
                 <i class="fa-solid fa-moon"></i>
             </button>
         </div>
-        <div class="sn-logo"><i class="fa-solid fa-mosque"></i></div>
+        <div class="sn-logo"><i class="fa-solid fa-house-user"></i></div>
         <h3><?= e(APP_FULL) ?></h3>
-        <p class="sn-sub">Sistem Informasi Manajemen Santri</p>
+        <p class="sn-sub">Sistem Informasi Rukun Tetangga</p>
         <p class="sn-hint" id="snHint">Isi dua kolom di bawah. Saat lengkap, tombolnya berhenti lari.</p>
         <?php if ($error): ?>
             <div class="sn-error"><?= e($error) ?></div>
@@ -78,7 +78,7 @@ try { if (localStorage.getItem('santriDark') === '1') document.body.classList.ad
                 </button>
             </div>
         </form>
-        <p class="sn-foot">FATH DARUT TAFSIR &middot; SISTEM INFORMASI SANTRI</p>
+        <p class="sn-foot">RT <?= RT_NO ?> / RW <?= RW_NO ?> &middot; SISTEM INFORMASI RT</p>
     </div>
 </div>
 <script>
