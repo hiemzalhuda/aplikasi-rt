@@ -173,7 +173,7 @@ include __DIR__ . '/../../includes/header.php';
     <?php else: foreach ($warga as $r): ?>
         <tr data-search="<?= e(strtolower($r['nik'] . ' ' . $r['nama'] . ' ' . $r['no_kk'] . ' ' . ($r['alamat'] ?? ''))) ?>">
             <td><code><?= e($r['nik']) ?></code></td>
-            <td><strong><?= e($r['nama']) ?></strong></td>
+            <td><strong><a href="<?= url('modules/warga/profil.php?id=' . (int) $r['id']) ?>" class="w-link"><?= e($r['nama']) ?></a></strong></td>
             <td><?= e($r['jk']) ?></td>
             <td><code><?= e($r['no_kk']) ?></code></td>
             <td><?= e(ucwords(strtolower($r['hubungan']))) ?></td>
