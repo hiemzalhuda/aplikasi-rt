@@ -508,7 +508,14 @@ body.page-leave .app { opacity: 0; transform: translateY(12px); }
 .dash-greet { margin: 0 0 20px; font-size: 30px; font-weight: 800; letter-spacing: -.02em; color: var(--text); }
 .dash-grid { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 18px; align-items: start; }
 .dash-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
-.dash-clock { display: flex; align-items: center; gap: 18px; }
+.dash-clock { display: flex; flex-direction: column; gap: 12px; }
+.ck-main { display: flex; align-items: center; gap: 18px; }
+.ck-cap {
+    border-top: 1px solid var(--border); padding-top: 12px;
+    font-size: 12px; font-weight: 600; color: var(--text-soft);
+    display: flex; align-items: center; gap: 8px;
+}
+.ck-cap i { color: var(--brand); }
 /* Jam analog hidup (SVG) */
 .ck-svg { width: 76px; height: 76px; flex-shrink: 0; filter: drop-shadow(0 4px 10px rgba(79, 70, 229, .22)); }
 .ck-face { fill: var(--card); stroke: var(--border); stroke-width: 3; }

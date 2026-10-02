@@ -104,6 +104,7 @@ include __DIR__ . '/includes/header.php';
     <div>
         <div class="dash-row2">
             <div class="card dash-clock">
+                <div class="ck-main">
                 <svg class="ck-svg" viewBox="0 0 100 100" aria-hidden="true">
                     <circle cx="50" cy="50" r="46" class="ck-face"/>
                     <g id="ckTicks"></g>
@@ -117,6 +118,8 @@ include __DIR__ . '/includes/header.php';
                     <div class="ck-time" id="dashClockTime">--:--:--</div>
                     <div class="ck-sub"><?= e($tgl_indo_full) ?></div>
                 </div>
+                </div>
+                <div class="ck-cap"><i class="fa-solid fa-house-user"></i><span>Sistem Manajemen RT 01 &middot; Perumahan Grand Harmoni 2, Balaraja</span></div>
             </div>
             <div class="card dash-prog">
                 <h3>Progress iuran</h3>
