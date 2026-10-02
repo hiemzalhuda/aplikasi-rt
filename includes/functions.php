@@ -7,8 +7,9 @@
 if (!defined('APP_NAME')) define('APP_NAME', 'SI-RT');
 if (!defined('APP_FULL')) define('APP_FULL', 'Sistem Informasi RT');
 /** Identitas wilayah (ubah sesuai RT/RW setempat) */
-if (!defined('RT_NO')) define('RT_NO', '001');
-if (!defined('RW_NO')) define('RW_NO', '001');
+if (!defined('RT_NO')) define('RT_NO', '01');
+if (!defined('RW_NO')) define('RW_NO', ''); // kosongkan bila belum tahu no. RW
+if (!defined('RT_WILAYAH')) define('RT_WILAYAH', 'Grand Harmoni 2, Balaraja');
 /** Versi aplikasi (tampil di footer sidebar) */
 if (!defined('APP_VERSION')) define('APP_VERSION', '2.0.0');
 /** Nominal iuran bulanan default per KK (Rp) */
@@ -30,7 +31,22 @@ function surat_jenis_list() {
     );
 }
 
-/** Nomor surat berikutnya: 001/DOM/RT.001/RW.001/X/2026 */
+/** Label identitas RT untuk tampilan, mis. "RT 01 · Grand Harmoni 2, Balaraja". */
+function rt_label() {
+    $s = 'RT ' . RT_NO;
+    if (RW_NO !== '') $s .= '/RW ' . RW_NO;
+    if (defined('RT_WILAYAH') && RT_WILAYAH !== '') $s .= ' · ' . RT_WILAYAH;
+    return $s;
+}
+
+/** Label singkat untuk badan surat, mis. "RT 01" atau "RT 01/RW 02". */
+function rt_label_singkat() {
+    $s = 'RT ' . RT_NO;
+    if (RW_NO !== '') $s .= '/RW ' . RW_NO;
+    return $s;
+}
+
+/** Nomor surat berikutnya: 001/DOM/RT.01/X/2026 (segmen RW hanya bila diisi) */
 function nomor_surat_berikutnya($db, $jenis) {
     $map = surat_jenis_list();
     $kode = isset($map[$jenis]) ? $map[$jenis] : 'LAIN';
@@ -38,7 +54,9 @@ function nomor_surat_berikutnya($db, $jenis) {
     $bln_romawi = array(1=>'I',2=>'II',3=>'III',4=>'IV',5=>'V',6=>'VI',7=>'VII',8=>'VIII',9=>'IX',10=>'X',11=>'XI',12=>'XII');
     $r = db_one($db, 'SELECT COUNT(*) AS c FROM surat WHERE YEAR(tgl_terbit) = ?', 's', array($tahun));
     $seq = $r ? ((int) $r['c'] + 1) : 1;
-    return sprintf('%03d', $seq) . '/' . $kode . '/RT.' . RT_NO . '/RW.' . RW_NO . '/'
+    $seg = 'RT.' . RT_NO;
+    if (RW_NO !== '') $seg .= '/RW.' . RW_NO;
+    return sprintf('%03d', $seq) . '/' . $kode . '/' . $seg . '/'
         . $bln_romawi[(int) date('n')] . '/' . $tahun;
 }
 

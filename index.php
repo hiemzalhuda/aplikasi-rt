@@ -224,7 +224,7 @@ include __DIR__ . '/includes/header.php';
         <div class="fh-orb o4"></div>
     </div>
     <div class="fh-left">
-        <div class="fh-badge">RT <?= e(RT_NO) ?> / RW <?= e(RW_NO) ?></div>
+        <div class="fh-badge"><?= e(rt_label()) ?></div>
         <h1><?= $sapaan ?>, <?= e($user['nama']) ?></h1>
         <p class="fh-date"><?= e($tgl_indo_full) ?></p>
     </div>

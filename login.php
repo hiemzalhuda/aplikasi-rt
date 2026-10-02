@@ -78,7 +78,7 @@ try { if (localStorage.getItem('santriDark') === '1') document.body.classList.ad
                 </button>
             </div>
         </form>
-        <p class="sn-foot">RT <?= RT_NO ?> / RW <?= RW_NO ?> &middot; SISTEM INFORMASI RT</p>
+        <p class="sn-foot"><?= e(strtoupper(rt_label())) ?> &middot; SISTEM INFORMASI RT</p>
     </div>
 </div>
 <script>

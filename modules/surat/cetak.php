@@ -74,15 +74,15 @@ $ttl     = ($surat['tempat_lahir'] ?: '') !== '' || $surat['tgl_lahir']
 
 <div class="sheet">
     <div class="kop">
-        <h2>RUKUN TETANGGA <?= e(RT_NO) ?> / RUKUN WARGA <?= e(RW_NO) ?></h2>
-        <p>Alamat Sekretariat RT</p>
+        <h2>RUKUN TETANGGA <?= e(RT_NO) ?><?= RW_NO !== "" ? " / RUKUN WARGA " . e(RW_NO) : "" ?></h2>
+        <p><?= e(defined("RT_WILAYAH") ? RT_WILAYAH : "") ?></p>
     </div>
     <hr class="kop-line">
 
     <p class="nomor">Nomor: <?= e($surat['no_surat']) ?></p>
     <h1 class="judul-surat"><?= e($judul) ?></h1>
 
-    <p class="just">Yang bertanda tangan di bawah ini, Ketua RT <?= e(RT_NO) ?>/RW <?= e(RW_NO) ?>, menerangkan bahwa:</p>
+    <p class="just">Yang bertanda tangan di bawah ini, Ketua <?= e(rt_label_singkat()) ?>, menerangkan bahwa:</p>
 
     <table class="data">
         <tr><td class="k">Nama</td><td>: <strong><?= e($surat['nama'] ?: '-') ?></strong></td></tr>
@@ -94,14 +94,14 @@ $ttl     = ($surat['tempat_lahir'] ?: '') !== '' || $surat['tgl_lahir']
         <tr><td class="k">Alamat</td><td>: <?= e($surat['alamat'] ?: '-') ?></td></tr>
     </table>
 
-    <p class="just">Nama tersebut di atas adalah benar warga RT <?= e(RT_NO) ?>/RW <?= e(RW_NO) ?>.
+    <p class="just">Nama tersebut di atas adalah benar warga <?= e(rt_label_singkat()) ?>.
     Surat ini dibuat untuk keperluan: <strong><?= e($surat['keperluan'] ?: '-') ?></strong>.</p>
 
     <p class="just">Demikian surat ini dibuat dengan sebenarnya untuk dipergunakan sebagaimana mestinya.</p>
 
     <div class="ttd">
-        <p style="margin:0">Jakarta, <?= e(tgl_indo($surat['tgl_terbit'])) ?></p>
-        <p style="margin:0">Ketua RT <?= e(RT_NO) ?>/RW <?= e(RW_NO) ?></p>
+        <p style="margin:0">Balaraja, <?= e(tgl_indo($surat['tgl_terbit'])) ?></p>
+        <p style="margin:0">Ketua <?= e(rt_label_singkat()) ?></p>
         <div class="spasi"></div>
         <p class="nama-terang">( Nama Terang )</p>
     </div>

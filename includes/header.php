@@ -49,7 +49,7 @@ try { if (localStorage.getItem('santriDark') === '1') document.body.classList.ad
             <div class="brand-logo">R</div>
             <div>
                 <div class="brand-name"><?= e(defined('APP_NAME') ? APP_NAME : 'SI-RT') ?></div>
-                <div class="brand-sub">RT <?= e(defined('RT_NO') ? RT_NO : '-') ?> / RW <?= e(defined('RW_NO') ? RW_NO : '-') ?></div>
+                <div class="brand-sub"><?= e(rt_label()) ?></div>
             </div>
         </div>
         <nav class="nav">
