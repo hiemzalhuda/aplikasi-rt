@@ -78,36 +78,6 @@ $laporan_baru = db_one($koneksi, "SELECT COUNT(*) AS c FROM laporan WHERE status
 $laporan_baru = $laporan_baru ? (int) $laporan_baru['c'] : 0;
 $laporan = db_all($koneksi,
     'SELECT id, judul, kategori, tanggal, status FROM laporan ORDER BY tanggal DESC, id DESC LIMIT 5');
-
-include __DIR__ . '/includes/header.php';
-?>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<style>
-    /* ============ FINO HERO (greeting) — adaptasi dashboard WMS ============ */
-    .fh-hero {
-        background: linear-gradient(135deg, #C4E69A 0%, #B0DC80 55%, #9CD165 100%);
-        border-radius: 22px;
-        padding: 26px 30px;
-        color: #172111;
-        position: relative;
-        overflow: hidden;
-        margin-bottom: 22px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 16px;
-        box-shadow: var(--shadow-card);
-    }
-    .fh-orbs { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
-    .fh-orb { position: absolute; border-radius: 50%; background: rgba(255,255,255,.38); }
-    .fh-orb.o1 { width: 260px; height: 260px; top: -110px; left: -70px; animation: fhFloat1 9s ease-in-out infinite alternate; }
-    .fh-orb.o2 { width: 380px; height: 380px; bottom: -190px; right: 8%; opacity: .55; animation: fhFloat2 12s ease-in-out infinite alternate-reverse; }
-    .fh-orb.o3 { width: 110px; height: 110px; top: 26%; left: 44%; animation: fhFloat3 7s ease-in-out infinite alternate; }
-    .fh-orb.o4 { width: 170px; height: 170px; bottom: -70px; left: 24%; opacity: .6; animation: fhFloat4 11s ease-in-out infinite alternate; }
-
-<?php
 // ---- Data turunan untuk tampilan baru ----
 $nama_depan = strtok(trim($user['nama'] ?? 'Pengguna'), ' ');
 $tgl_caps = mb_strtoupper($tgl_indo_full, 'UTF-8');
@@ -126,8 +96,6 @@ $boleh_warga = in_array($role, array('admin', 'ketua', 'sekretaris'), true);
 
 include __DIR__ . '/includes/header.php';
 ?>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <div class="dash-date"><?= e($tgl_caps) ?></div>
 <h1 class="dash-greet"><?= e($sapaan) ?>, <?= e($nama_depan) ?>.</h1>
@@ -282,6 +250,7 @@ include __DIR__ . '/includes/header.php';
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 (function () {
     // Jam live
@@ -294,7 +263,8 @@ include __DIR__ . '/includes/header.php';
     tick(); setInterval(tick, 1000);
 
     <?php if ($boleh_keuangan): ?>
-    // Grafik kas
+    // Grafik kas (guard: CDN boleh gagal tanpa merusak jam)
+    if (typeof Chart !== 'undefined') {
     var dark = document.body.classList.contains('dark-mode');
     var kd = <?= $json_kas ?>;
     new Chart(document.getElementById('kasChart'), {
@@ -315,6 +285,7 @@ include __DIR__ . '/includes/header.php';
             }
         }
     });
+    } // end Chart guard
     <?php endif; ?>
 })();
 </script>
