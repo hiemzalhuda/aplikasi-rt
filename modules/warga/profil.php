@@ -38,7 +38,7 @@ $keluarga = db_all($koneksi,
 
 // Akun yang tertaut ke warga ini
 $akun = db_one($koneksi,
-    'SELECT username, nama, role, status FROM users WHERE warga_id = ? LIMIT 1',
+    'SELECT username, nama_lengkap, role, aktif FROM users WHERE warga_id = ? LIMIT 1',
     'i', array((int) $w['id']));
 
 // Iuran KK ini (6 periode terakhir)
@@ -119,8 +119,9 @@ include __DIR__ . '/../../includes/header.php';
             <h3><i class="fa-solid fa-user-check card-ico"></i>Akun Tertaut</h3>
             <?php if ($akun): ?>
             <div class="pf-row"><dt>Username</dt><dd><code><?= e($akun['username']) ?></code></dd></div>
+            <div class="pf-row"><dt>Nama Akun</dt><dd><?= e($akun['nama_lengkap']) ?></dd></div>
             <div class="pf-row"><dt>Role</dt><dd><?= e(ucfirst($akun['role'])) ?></dd></div>
-            <div class="pf-row"><dt>Status</dt><dd><span class="badge <?= $akun['status'] === 'aktif' ? 'badge-ok' : 'badge-warn' ?>"><?= e(ucfirst($akun['status'])) ?></span></dd></div>
+            <div class="pf-row"><dt>Status</dt><dd><span class="badge <?= (int) $akun['aktif'] === 1 ? 'badge-ok' : 'badge-warn' ?>"><?= (int) $akun['aktif'] === 1 ? 'Aktif' : 'Nonaktif' ?></span></dd></div>
             <?php else: ?>
             <div class="dash-empty">Belum punya akun. Tautkan dari menu Pengguna.</div>
             <?php endif; ?>
